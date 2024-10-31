@@ -20,6 +20,7 @@ import { RecipesService } from './recipes/recipes.service';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthComponent } from './auth/auth.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
+import { AlertComponent } from './shared/alert/alert.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinne
     RecipeStartComponent,
     RecipeEditComponent,
     AuthComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    AlertComponent
   ],
 
   schemas: [NO_ERRORS_SCHEMA],

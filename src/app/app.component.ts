@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthResponseData } from './auth/back4-app.service';
 // import { Back4AppService } from './back4-app.service';
-import { AuthService } from './auth/back4-app.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [],
 })
+
 export class AppComponent implements OnInit {
   // loadedfeature = 'recepie1';
   // onNavigate(feature: string) {
@@ -14,14 +15,10 @@ export class AppComponent implements OnInit {
   // }
 
   // constructor(private back4AppService: Back4AppService) {}
-  constructor(private authService: AuthService) {}
+  constructor() {}
 
   ngOnInit() {
-    this.authService.autoLogin();
-    // Example data to send
-    const sampleData = {
-      name: 'hey',
-      age: 25,
+    
     };
 
     // Call the postData method and log the response
@@ -30,4 +27,6 @@ export class AppComponent implements OnInit {
     //   error: (error) => console.error('Error posting data:', error),
     // });
   }
-}
+
+
+
