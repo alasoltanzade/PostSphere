@@ -26,7 +26,17 @@ export class RecipesService {
     ),
   ];
 
+  // when we want to fetch a data we do not use dummy data instence
+  // private recipes: Recipes[] = [];
+
+  
+
   constructor(private slService: ShoppingListService) {}
+
+  setRecipes(recipes: Recipes[]) {
+    this.recipes = recipes;
+    this.recipeChanged.next(this.recipes.slice());
+  }
 
   getRecipes() {
     //return this recipe to get it from the outside

@@ -17,6 +17,9 @@ import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.compon
 import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
 import { ShoppingGuard } from './shopping-list/shopping-guard.service';
 import { RecipesService } from './recipes/recipes.service';
+import { HttpClientModule } from '@angular/common/http';
+import { AuthComponent } from './auth/auth.component';
+import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 
 @NgModule({
   declarations: [
@@ -31,12 +34,19 @@ import { RecipesService } from './recipes/recipes.service';
     DropdownDirective,
     RecipeStartComponent,
     RecipeEditComponent,
-
+    AuthComponent,
+    LoadingSpinnerComponent
   ],
 
   schemas: [NO_ERRORS_SCHEMA],
-  imports: [BrowserModule, FormsModule, AppRoutingModule, ReactiveFormsModule],
-  providers: [ShoppingListService, ShoppingGuard , RecipesService],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    AppRoutingModule,
+    HttpClientModule,
+    ReactiveFormsModule,
+  ],
+  providers: [ShoppingListService, ShoppingGuard, RecipesService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
