@@ -21,6 +21,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AuthComponent } from './auth/auth.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { AlertComponent } from './shared/alert/alert.component';
+import { PlaceHolderDirective } from './shared/placeholder/placeholder.directive';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { AlertComponent } from './shared/alert/alert.component';
     RecipeEditComponent,
     AuthComponent,
     LoadingSpinnerComponent,
-    AlertComponent
+    AlertComponent,
+    PlaceHolderDirective
   ],
 
   schemas: [NO_ERRORS_SCHEMA],
@@ -50,5 +52,7 @@ import { AlertComponent } from './shared/alert/alert.component';
   ],
   providers: [ShoppingListService, ShoppingGuard, RecipesService],
   bootstrap: [AppComponent],
+  // entryComponents: []
+  
 })
 export class AppModule {}
