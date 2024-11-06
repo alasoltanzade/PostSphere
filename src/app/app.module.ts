@@ -1,58 +1,43 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
-import { RecipesComponent } from './recipes/recipes.component';
-import { RecipesListComponent } from './recipes/recipes-list/recipes-list.component';
-import { RecipesDetailComponent } from './recipes/recipes-detail/recipes-detail.component';
-import { RecipesItemComponent } from './recipes/recipes-list/recipes-item/recipes-item.component';
-import { ShoppingListComponent } from './shopping-list/shopping-list.component';
-import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-edit.component';
-import { DropdownDirective } from './shared/dropdown.directive';
-import { ShoppingListService } from './shopping-list/shopping-list.service';
 import { AppRoutingModule } from './app-routing.module';
-import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.component';
-import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
-import { ShoppingGuard } from './shopping-list/shopping-guard.service';
-import { RecipesService } from './recipes/recipes.service';
-import { HttpClientModule } from '@angular/common/http';
-import { AuthComponent } from './auth/auth.component';
-import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
-import { AlertComponent } from './shared/alert/alert.component';
-import { PlaceHolderDirective } from './shared/placeholder/placeholder.directive';
+import { SharedModule } from './shared/shared.module';
+import { CoreModule } from './core.module';
+import { RecipesModule } from './recipes/recipes.module';
+import { ShoppingListModule } from './shopping-list/shopping-list.module';
+import { BrowserModule } from '@angular/platform-browser';
 
+// NgModule= to set certain things up & group certain things toghether
 @NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    RecipesComponent,
-    RecipesListComponent,
-    RecipesDetailComponent,
-    RecipesItemComponent,
-    ShoppingListComponent,
-    ShoppingEditComponent,
-    DropdownDirective,
-    RecipeStartComponent,
-    RecipeEditComponent,
-    AuthComponent,
-    LoadingSpinnerComponent,
-    AlertComponent,
-    PlaceHolderDirective
+  declarations: [AppComponent, HeaderComponent],
+
+  // import other module to this module
+  imports: [
+    SharedModule,
+    BrowserModule,
+    HttpClientModule,
+    AppRoutingModule,
+    CoreModule,
+    RecipesModule,
+    ShoppingListModule,
+    
   ],
 
-  schemas: [NO_ERRORS_SCHEMA],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    AppRoutingModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-  ],
-  providers: [ShoppingListService, ShoppingGuard, RecipesService],
+  // schemas: [NO_ERRORS_SCHEMA],
+
+  // exports  it is not that much impoartant to export component
+
+  // we defind all service we wanna provide - any service u plan or injecting need to be provide
+  // providers: [ShoppingListService, ShoppingGuard, RecipesService],
+
+  //for starting your app it defind which component is available right in that index html
   bootstrap: [AppComponent],
+
   // entryComponents: []
-  
 })
 export class AppModule {}
+
+// 418

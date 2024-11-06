@@ -20,7 +20,7 @@ export class ShoppingGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (route.routeConfig.path === 'shopping') {
+    if (route.routeConfig.path === 'shopping-list') {
       setTimeout(() => {
         return false;
       }, 8000);

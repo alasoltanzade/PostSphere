@@ -97,6 +97,6 @@ export class AuthComponent implements OnDestroy {
 
 
 // Component dynamic: 
-// 1.creat your own component factory
+// 1. creat your own component factory
 // 2. use view container reference which you can access to with the help of a helper directive 
 // 3. use that to dynamically creat and render your component with the help of Angular
