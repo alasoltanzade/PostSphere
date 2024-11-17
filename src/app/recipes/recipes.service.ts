@@ -1,8 +1,12 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Recipes } from './recipes.model';
 import { Ingredient } from '../shared/ingredient.model';
-import { ShoppingListService } from '../shopping-list/shopping-list.service';
+// import { ShoppingListService } from '../shopping-list/shopping-list.service';
 import { Subject } from 'rxjs';
+import { Store } from '@ngrx/store';
+import * as ShoppingListActions from '../shopping-list/store/shopping-list.actions';
+import * as fromApp from '../store/app.reducer';
+
 
 @Injectable()
 export class RecipesService {
@@ -11,27 +15,28 @@ export class RecipesService {
   // recipeSelected = new EventEmitter<Recipes>();
   // recipeSelected = new Subject<Recipes>();
 
-  private recipes: Recipes[] = [
-    new Recipes(
-      'Ratatouille',
-      ' Homemade Ratatouille Recipes',
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_EzRX_OuUZ92uzLZ04JZpx5F-Qo1yrih4pzBBciV_sxwrKEYLMaZl9hoIr14yu8-rPkU&usqp=CAU',
-      [new Ingredient('Meat', 1), new Ingredient('French Fries', 20)]
-    ),
-    new Recipes(
-      'Hamberger',
-      ' Homemade Ham Recipes',
-      'https://img.freepik.com/premium-photo/hamburger-table_862330-14558.jpg?w=360',
-      [new Ingredient('Buns', 1), new Ingredient('Meat', 1)]
-    ),
-  ];
+  // private recipes: Recipes[] = [
+  //   new Recipes(
+  //     'Ratatouille',
+  //     ' Homemade Ratatouille Recipes',
+  //     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_EzRX_OuUZ92uzLZ04JZpx5F-Qo1yrih4pzBBciV_sxwrKEYLMaZl9hoIr14yu8-rPkU&usqp=CAU',
+  //     [new Ingredient('Meat', 1), new Ingredient('French Fries', 20)]
+  //   ),
+  //   new Recipes(
+  //     'Hamberger',
+  //     ' Homemade Ham Recipes',
+  //     'https://img.freepik.com/premium-photo/hamburger-table_862330-14558.jpg?w=360',
+  //     [new Ingredient('Buns', 1), new Ingredient('Meat', 1)]
+  //   ),
+  // ];
 
   // when we want to fetch a data we do not use dummy data instence
-  // private recipes: Recipes[] = [];
+  private recipes: Recipes[] = [];
 
-  
-
-  constructor(private slService: ShoppingListService) {}
+  constructor(
+    // private slService: ShoppingListService,
+    private store: Store<fromApp.AppState>
+  ) {}
 
   setRecipes(recipes: Recipes[]) {
     this.recipes = recipes;
@@ -48,8 +53,10 @@ export class RecipesService {
   }
 
   addIngredientToShoppingList(ingredients: Ingredient[]) {
-    this.slService.addIngrediant(ingredients);
+    // this.slService.addIngrediant(ingredients);
+    this.store.dispatch(new ShoppingListActions.AddIngredients(ingredients));
   }
+
 
   addrecipe(recipe: Recipes) {
     this.recipes.push(recipe);

@@ -181,3 +181,7 @@ observable.subscribe(subject); // You can subscribe providing a Subject
 
 *A ReplaySubject records multiple values from the Observable execution and replays them to new subscribers.
 
+_________________________________________________________________________________________
+
+
+side effect in ngrx: basically part of your code that it is not immediate update of the current state

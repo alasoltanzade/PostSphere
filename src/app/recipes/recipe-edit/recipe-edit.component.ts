@@ -14,6 +14,11 @@ export class RecipeEditComponent implements OnInit {
   editModel = false;
   recipeForm: FormGroup;
 
+  get ingredientsControls() {
+    // a getter!
+    return (<FormArray>this.recipeForm.get('ingredients')).controls;
+  }
+
   constructor(
     private route: ActivatedRoute,
     private recipeService: RecipesService,
@@ -29,18 +34,38 @@ export class RecipeEditComponent implements OnInit {
   }
 
   onSubmit() {
-    const newRecipe = new Recipes(
-      this.recipeForm.value['name'],
-      this.recipeForm.value['description'],
-      this.recipeForm.value['imagePath'],
-      this.recipeForm.value['ingredients']
-    );
+    // const newRecipe = new Recipes(
+    //   this.recipeForm.value['name'],
+    //   this.recipeForm.value['description'],
+    //   this.recipeForm.value['imagePath'],
+    //   this.recipeForm.value['ingredients']
+    // );
     if (this.editModel) {
-      this.recipeService.updateRecipe(this.id, newRecipe);
+      this.recipeService.updateRecipe(this.id, this.recipeForm.value);
     } else {
-      this.recipeService.addrecipe(newRecipe);
+      this.recipeService.addrecipe(this.recipeForm.value);
     }
     this.onCancel();
+  }
+
+  onAddIngredients() {
+    (<FormArray>this.recipeForm.get('ingredients')).push(
+      new FormGroup({
+        name: new FormControl(null, Validators.required),
+        amount: new FormControl(null, [
+          Validators.required,
+          Validators.pattern(/^[1-9]+[0-9]*$/),
+        ]),
+      })
+    );
+  }
+
+  onCancel() {
+    this.router.navigate(['../'], { relativeTo: this.route });
+  }
+
+  onDeleteIngerediant(index: number) {
+    (<FormArray>this.recipeForm.get('ingredients')).removeAt(index);
   }
 
   private initForm() {
@@ -76,30 +101,5 @@ export class RecipeEditComponent implements OnInit {
       description: new FormControl(recipeDescription, Validators.required),
       ingredients: recipeIngredients,
     });
-  }
-
-  onAddIngredients() {
-    (<FormArray>this.recipeForm.get('ingredients')).push(
-      new FormGroup({
-        name: new FormControl(null, Validators.required),
-        amount: new FormControl(null, [
-          Validators.required,
-          Validators.pattern(/^[1-9]+[0-9]*$/),
-        ]),
-      })
-    );
-  }
-
-  get controls() {
-    // a getter!
-    return (<FormArray>this.recipeForm.get('ingredients')).controls;
-  }
-
-  onCancel() {
-    this.router.navigate(['../'], { relativeTo: this.route });
-  }
-
-  onDeleteIngerediant(index: number) {
-    (<FormArray>this.recipeForm.get('ingredients')).removeAt(index);
   }
 }

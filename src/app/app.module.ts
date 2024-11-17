@@ -9,6 +9,13 @@ import { CoreModule } from './core.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { ShoppingListModule } from './shopping-list/shopping-list.module';
 import { BrowserModule } from '@angular/platform-browser';
+import { StoreModule } from '@ngrx/store';
+import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
+import { authReducer } from './auth/store/auth.reducer';
+import * as fromApp from './store/app.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { AuthEffects } from './auth/store/auth.effects';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 // NgModule= to set certain things up & group certain things toghether
 @NgModule({
@@ -16,18 +23,18 @@ import { BrowserModule } from '@angular/platform-browser';
 
   // import other module to this module
   imports: [
-    SharedModule,
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
+    StoreModule.forRoot(fromApp.appReducer),
+    EffectsModule.forRoot([AuthEffects]),
+    StoreRouterConnectingModule.forRoot(),
+    SharedModule,
     CoreModule,
-    RecipesModule,
-    ShoppingListModule,
-    
   ],
 
   // schemas: [NO_ERRORS_SCHEMA],
-
+ 
   // exports  it is not that much impoartant to export component
 
   // we defind all service we wanna provide - any service u plan or injecting need to be provide
@@ -40,4 +47,4 @@ import { BrowserModule } from '@angular/platform-browser';
 })
 export class AppModule {}
 
-// 418
+// we add ngrx by including the storeModule and calling forRoot & tell which reducer we have in out app

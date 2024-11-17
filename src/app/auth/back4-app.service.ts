@@ -8,7 +8,10 @@ import { Router } from '@angular/router';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { User } from './user.model';
-import { environment } from '../environment';
+import { environment } from '../../environments/environment';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../store/app.reducer';
+import * as AuthActions from './store/auth.actions';
 
 export interface AuthResponseData {
   kind: string;
@@ -29,10 +32,14 @@ export class AuthService {
     'Content-Type': 'application/json',
   });
 
-  user = new BehaviorSubject<User>(null);
+  // user = new BehaviorSubject<User>(null);
   private tokenExpirationTimer: any;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private store: Store<fromApp.AppState>
+  ) {}
 
   // Common method for posting data
   private post<T>(endpoint: string, data: any): Observable<T> {
@@ -43,11 +50,14 @@ export class AuthService {
 
   // Signup
   signup(email: string, password: string): Observable<AuthResponseData> {
-    return this.post<AuthResponseData>('', {
-      email,
-      password,
-      returnSecureToken: true,
-    }).pipe(
+    return this.post<AuthResponseData>(
+      'mongodb://admin:vOcXYRA3GA6B8E6F0nxETFPT@MongoS3601A.back4app.com:27017/76d7452a0b6140958f7acf06ddaadf02',
+      {
+        email,
+        password,
+        returnSecureToken: true,
+      }
+    ).pipe(
       tap((resData) =>
         this.handleAuthentication(
           resData.email,
@@ -61,11 +71,14 @@ export class AuthService {
 
   // Login
   login(email: string, password: string): Observable<AuthResponseData> {
-    return this.post<AuthResponseData>('', {
-      email,
-      password,
-      returnSecureToken: true,
-    }).pipe(
+    return this.post<AuthResponseData>(
+      'mongodb://admin:vOcXYRA3GA6B8E6F0nxETFPT@MongoS3601A.back4app.com:27017/76d7452a0b6140958f7acf06ddaadf02',
+      {
+        email,
+        password,
+        returnSecureToken: true,
+      }
+    ).pipe(
       tap((resData) =>
         this.handleAuthentication(
           resData.email,
@@ -93,65 +106,81 @@ export class AuthService {
       userData._token,
       new Date(userData._tokenExpirationDate)
     );
+
     if (loadedUser.token) {
-      this.user.next(loadedUser);
-      this.autoLogout(
-        new Date(userData._tokenExpirationDate).getTime() - Date.now()
+      // this.user.next(loadedUser);
+      this.store.dispatch(
+        new AuthActions.AuthenticateSuccess({
+          email: loadedUser.email,
+          userId: loadedUser.id,
+          token: loadedUser.token,
+          expirationDate: new Date(userData._tokenExpirationDate),
+        })
       );
+      const expirationDuration =
+        new Date(userData._tokenExpirationDate).getTime() -
+        new Date().getTime();
+      this.autoLogout(expirationDuration);
     }
   }
 
   // Logout
   logout() {
-    this.user.next(null);
+    // this.user.next(null);
+    this.store.dispatch(new AuthActions.Logout());
     this.router.navigate(['/auth']);
     localStorage.removeItem('userData');
-    if (this.tokenExpirationTimer) clearTimeout(this.tokenExpirationTimer);
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
     this.tokenExpirationTimer = null;
   }
 
-  // Auto-logout after expiration
   autoLogout(expirationDuration: number) {
-    this.tokenExpirationTimer = setTimeout(
-      () => this.logout(),
-      expirationDuration
-    );
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.logout();
+    }, expirationDuration);
   }
 
   // Manage user session and token expiration
+
   private handleAuthentication(
     email: string,
     userId: string,
     token: string,
     expiresIn: number
   ) {
-    const expirationDate = new Date(Date.now() + expiresIn * 1000);
+    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+    // this.user.next(user);
     const user = new User(email, userId, token, expirationDate);
-    this.user.next(user);
+    this.store.dispatch(
+      new AuthActions.AuthenticateSuccess({
+        email: email,
+        userId: userId,
+        token: token,
+        expirationDate: expirationDate,
+      })
+    );
     this.autoLogout(expiresIn * 1000);
     localStorage.setItem('userData', JSON.stringify(user));
   }
 
-  // Error handler
   private handleError(errorRes: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred!';
-    if (errorRes.error?.error?.message) {
-      errorMessage = this.getErrorMessage(errorRes.error.error.message);
+    if (!errorRes.error || !errorRes.error.error) {
+      return throwError(errorMessage);
+    }
+    switch (errorRes.error.error.message) {
+      case 'EMAIL_EXISTS':
+        errorMessage = 'This email exists already';
+        break;
+      case 'EMAIL_NOT_FOUND':
+        errorMessage = 'This email does not exist.';
+        break;
+      case 'INVALID_PASSWORD':
+        errorMessage = 'This password is not correct.';
+        break;
     }
     return throwError(errorMessage);
-  }
-
-  // Error message mapping
-  private getErrorMessage(errorCode: string): string {
-    switch (errorCode) {
-      case 'EMAIL_EXISTS':
-        return 'This email exists already';
-      case 'EMAIL_NOT_FOUND':
-        return 'This email does not exist.';
-      case 'INVALID_PASSWORD':
-        return 'This password is not correct.';
-      default:
-        return 'An unknown error occurred!';
-    }
   }
 }

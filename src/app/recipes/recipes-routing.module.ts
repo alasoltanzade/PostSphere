@@ -6,6 +6,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { RecipeStartComponent } from './recipe-start/recipe-start.component';
 import { RecipeEditComponent } from './recipe-edit/recipe-edit.component';
 import { RecipesDetailComponent } from './recipes-detail/recipes-detail.component';
+import { RecipesResolverService } from './recipes-resolver.service';
 
 
 const routes: Routes = [
@@ -19,12 +20,12 @@ const routes: Routes = [
       {
         path: ':id',
         component: RecipesDetailComponent,
-        resolve: []
+        resolve: [RecipesResolverService]
       },
       {
         path: ':id/edit',
         component: RecipeEditComponent,
-        resolve: []
+        resolve: [RecipesResolverService]
       }
     ]
   }

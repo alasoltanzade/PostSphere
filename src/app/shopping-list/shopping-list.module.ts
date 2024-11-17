@@ -9,10 +9,10 @@ import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [ShoppingListComponent, ShoppingEditComponent],
   imports: [
+    FormsModule,
     RouterModule.forChild([{ path: '', component: ShoppingListComponent }]),
     SharedModule,
-    FormsModule,
   ],
-  providers: [LoggingSerive],
+  // providers: [LoggingSerive],
 })
 export class ShoppingListModule {}
