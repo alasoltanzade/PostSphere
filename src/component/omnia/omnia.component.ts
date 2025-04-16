@@ -43,7 +43,6 @@ export class OmniaComponent implements OnInit {
 
     this.items = [
       {
-        template: 'assets/images/r8Pro/list-light-1.svg',
         label: '',
         icon: 'pi pi-box',
         items: [
