@@ -22,6 +22,27 @@
   margin-right: inherit;
 }
 
+::ng-deep.p-megamenu {
+  background: unset !important;
+  border: none !important;
+}
+
+::ng-deep.p-megamenu-button {
+  display: flex !important;
+  color: #FFF !important;
+}
+
+.text111 {
+  color: #FFF;
+  text-align: center;
+  font-family: Poppins;
+  font-size: 23px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 109%;
+  text-transform: capitalize;
+}
+
 .text1 {
   color: #FFF;
   text-align: center;

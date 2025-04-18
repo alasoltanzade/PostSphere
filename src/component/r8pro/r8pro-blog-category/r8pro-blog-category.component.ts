@@ -18,7 +18,7 @@ import { ChunkPipe } from './chunk.pipe';
     MegaMenuModule,
     NgFor,
     ChunkPipe,
-  ], 
+  ],
   templateUrl: './r8pro-blog-category.component.html',
   styleUrl: './r8pro-blog-category.component.scss',
 })
@@ -26,7 +26,7 @@ export class R8proBlogCategoryComponent implements OnInit {
   constructor(private router: Router) {}
 
   items: MegaMenuItem[] | undefined;
-  cards: any[] = []; 
+  cards: any[] = [];
 
   language = [
     { name: 'English' },
@@ -38,7 +38,6 @@ export class R8proBlogCategoryComponent implements OnInit {
   ngOnInit() {
     this.items = [
       {
-        label: 'r8.pro',
         icon: 'pi pi-box',
         items: [
           [

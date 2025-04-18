@@ -26,7 +26,6 @@ export class R8proBlogComponent implements OnInit {
   ngOnInit() {
     this.items = [
       {
-         label: 'r8.pro',
         icon: 'pi pi-box',
         items: [
           [
