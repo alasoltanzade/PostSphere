@@ -357,3 +357,17 @@
   }
 
 }
+
+
+
+@media (max-width: 425px) {
+  .hide-on-small {
+    display: none !important;
+  }
+}
+
+@media (min-width: 426px) {
+  .hide-on-big {
+    display: none !important;
+  }
+}

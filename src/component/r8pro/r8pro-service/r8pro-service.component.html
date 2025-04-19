@@ -8,7 +8,7 @@
         <span class="text111">r8.pro</span>
         <p-megamenu [model]="items" class="me-5" />
       </div>
-      
+
       <div class="position-absolute top-50 start-50 translate-middle text-center">
         <div class="text1">Services</div>
         <span class="text2 text-nowrap">Lorem ipsum dolor sit</span>
@@ -312,13 +312,24 @@
         style="background: linear-gradient(180deg, rgba(0, 0, 0, 0.17) 0%, rgba(0, 0, 0, 0.74) 100%);"></div>
       <div class="position-absolute bottom-0 start-50 translate-middle text-center">
         <span class="text2 fw-bold text-nowrap">R8.pro</span>
-        <div class="d-flex justify-content-between mt-5">
+        <div class="d-flex justify-content-between mt-5 hide-on-small">
           <span class="text3">All Rights Reserved</span>
           <span class="text3 mx-5">Terms and Conditions</span>
           <span class="text3">Terms and Conditions</span>
           <span class="text3 ms-5">Privacy Policy</span>
         </div>
-        <div class="d-flex justify-content-between mt-5 margin2">
+
+        <div class="d-flex flex-column justify-content-between gap-4 mt-5 hide-on-big">
+          <span class="text3">All Rights Reserved</span>
+          <span class="text3">Terms and Conditions</span>
+          <span class="text3">Terms and Conditions</span>
+          <span class="text3">Privacy Policy</span>
+        </div>
+
+
+
+
+        <div class="d-flex gap-2 align-items-center justify-content-between mt-5 margin2">
           <svg width="12" height="20" viewBox="0 0 12 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M7.81339 19.2261V11.0154H10.7081L11.1415 7.81558H7.81331V5.77261C7.81331 4.84617 8.08348 4.21486 9.47893 4.21486L11.2586 4.21407V1.35215C10.9508 1.31322 9.89429 1.22607 8.66531 1.22607C6.09929 1.22607 4.34255 2.71725 4.34255 5.4558V7.81558H1.44043V11.0154H4.34255V19.226H7.81339V19.2261Z"
