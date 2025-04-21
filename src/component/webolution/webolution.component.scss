@@ -47,6 +47,7 @@
 }
 
 .btn3 {
+  font-size: 16.935px;
   border-radius: 67px;
   background: #FFF;
   display: flex;
@@ -57,7 +58,6 @@
   transition: all 0.3s ease;
   cursor: pointer;
   border: none;
-  font-weight: bold;
 
   &:hover {
     background: #F0F0F0;
@@ -140,6 +140,24 @@
   font-size: 21px;
 }
 
+.text9 {
+  color: #FFF;
+  font-family: "DM Sans";
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.text10 {
+  color: #FFF;
+  font-family: "DM Sans";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 200;
+  line-height: normal;
+}
+
 .card2 {
   display: inline-flex;
   padding: 0px 10px;
@@ -186,11 +204,12 @@
   background: linear-gradient(to top, rgba(255, 255, 255, 0.4) 50%, transparent 50%);
 }
 
-.fw1{
+.fw1 {
   font-weight: 100;
 }
 
 .card3 {
+  border: none;
   border-radius: 12px;
   background: #FFF;
 }
@@ -221,10 +240,6 @@
   gap: 10px;
   flex-shrink: 0;
   align-self: stretch;
-  color: #FFF;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 700;
   line-height: normal;
   transition: all 0.3s ease;
 
@@ -243,10 +258,7 @@
   align-items: center;
   gap: 10px;
   flex: 1 0 0;
-  color: #FFF;
-  font-size: 24px;
-  font-weight: 400;
-  line-height: normal;
+
   transition: all 0.3s ease;
 
   &:hover {
@@ -261,6 +273,9 @@
 }
 
 .card7 {
+  margin-top: 20px;
+  font-family: "DM Sans";
+  font-size: 24px;
   border-radius: 30px;
   background: #97DE40;
   display: flex;
@@ -319,12 +334,18 @@
   border-radius: 30px;
   background: #FFF;
   display: flex;
-  padding: 40px;
+  padding: 20px;
   justify-content: flex-end;
   align-items: flex-start;
   gap: 10px;
   flex: 1 0 0;
   transition: all 0.3s ease;
+  color: #0A0A0A;
+  font-family: "DM Sans";
+  font-size: 31px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
 
   &:hover {
     transform: scale(1.02);
@@ -440,9 +461,7 @@
     width: 100%;
   }
 
-  .d-flex {
-    flex-direction: column;
-  }
+
 
   .card4,
   .card5,
@@ -481,4 +500,144 @@
 
 .fontdmSans {
   font-family: "DM Sans";
+}
+
+
+.circle {
+  width: 128px;
+  height: 128px;
+  flex-shrink: 0;
+  border-radius: 100px;
+  opacity: 0.7;
+  background: #FFF;
+}
+
+.circle:not(:first-child) {
+  margin-left: -94px;
+}
+
+.text5 {
+  color: #FFF;
+  font-family: "DM Sans";
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.text6 {
+  color: #0A0A0A;
+  font-family: "DM Sans";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.text7 {
+  color: #0A0A0A;
+  font-family: "DM Sans";
+  font-size: 24px;
+  font-style: italic;
+  font-weight: 200;
+  line-height: normal;
+}
+
+.text8 {
+  color: #0A0A0A;
+  font-family: "DM Sans";
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.text11 {
+  color: #0A0A0A;
+  text-align: center;
+  font-family: "DM Sans";
+  font-size: 42px;
+  font-style: normal;
+  font-weight: bold;
+  line-height: normal;
+}
+
+.text12 {
+  color: #FFF;
+  font-family: "DM Sans";
+  font-size: 26px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.circle1 {
+  display: flex;
+  width: 75px;
+  padding: 14.423px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14.423px;
+  border-radius: 109.615px;
+  background: #97DE40;
+
+}
+
+.circle2 {
+  display: flex;
+  padding: 5.769px 0px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14.423px;
+  align-self: stretch;
+}
+
+
+@media (max-width: 1246px) {
+  .img1 {
+    display: none;
+  }
+
+  .img4,
+  .img5 {
+    width: 100%;
+  }
+}
+
+
+
+
+@media (max-width: 1345px) {
+  .gapClass {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 872px) {
+  .img2 {
+    display: none;
+  }
+}
+
+@media (max-width: 991px) {
+  .gapClass2 {
+      gap: 20px;
+    }
+  .img4 {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .card2 {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .starimg{
+    display: none;
+  }
+  .card3{
+    width: 100%;
+  }
 }

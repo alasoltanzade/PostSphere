@@ -29,7 +29,7 @@ export const routes: Routes = [
   { path: 'r8pro-service', component: R8proServiceComponent },
   { path: 'r8pro-blog', component: R8proBlogComponent },
   { path: 'r8pro-blog-category', component: R8proBlogCategoryComponent },
-  { path: 'omnia', component: OmniaComponent },
+  { path: 'omnia-page', component: OmniaComponent },
   { path: 'totxt', component: TOTXTComponent },
   { path: 'totxt/login', component: LoginComponent },
   { path: 'totxt/register', component: RegistrationComponent },
