@@ -20,6 +20,9 @@ import { MaviHostComponent } from './component/mavi-host/mavi-host.component';
 import { MaviDomainComponent } from './component/mavi-host/mavi-domain/mavi-domain.component';
 import { MaviServerComponent } from './component/mavi-host/mavi-server/mavi-server.component';
 import { DesignComponent } from './component/design/design.component';
+import { PortfolioComponent } from './component/portfolio/portfolio-homePage/portfolio.component';
+import { PortfolioContactComponent } from './component/portfolio/portfolio-contact/portfolio-contact.component';
+import { PortfolioAboutMeComponent } from './component/portfolio/portfolio-about-me/portfolio-about-me.component';
 
 export const routes: Routes = [
   { path: 'zoomin', component: MainPageComponent },
@@ -43,4 +46,7 @@ export const routes: Routes = [
   { path: 'mavi-domain', component: MaviDomainComponent },
   { path: 'mavi-server', component: MaviServerComponent },
   { path: 'design', component: DesignComponent },
+  { path: 'portfolio', component: PortfolioComponent },
+  { path: 'portfolio-contact', component: PortfolioContactComponent },
+  { path: 'portfolio-about-me', component: PortfolioAboutMeComponent },
 ];

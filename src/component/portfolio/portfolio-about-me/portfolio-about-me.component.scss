@@ -1,0 +1,54 @@
+.container-fluid {
+  background: linear-gradient(0deg, #474545 0%, #000000 100%), #FFF;
+}
+
+.btn1 {
+  border: none;
+  display: flex;
+  width: 169.337px;
+  padding: 13.362px 10.715px 10.715px 10.715px;
+  justify-content: center;
+  align-items: center;
+  gap: 10.715px;
+  border-radius: 18.521px;
+  background: var(--Linear, linear-gradient(89deg, #eeedec -0.03%, #818080 101.64%));
+  box-shadow: 0px 10.584px 10.584px 0px rgba(47, 141, 194, 0.16);
+  color: #000000;
+  text-align: right;
+  font-family: "Baloo 2";
+  font-size: 20.467px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28.93px;
+  letter-spacing: 0.614px;
+}
+
+
+.text2 {
+  color: var(--T, #a4a8ab);
+  font-family: "Baloo 2";
+  font-size: 35px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 55.68px;
+}
+
+
+.text3 {
+  color: #6E7C84;
+  font-family: "Baloo 2";
+  font-size: 27px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+
+.text4 {
+  color: var(--T, #dadfe4);
+  font-family: "Baloo 2";
+  font-size: 50px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 55.68px;
+}
