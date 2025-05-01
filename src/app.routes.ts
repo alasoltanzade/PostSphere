@@ -46,7 +46,7 @@ export const routes: Routes = [
   { path: 'mavi-domain', component: MaviDomainComponent },
   { path: 'mavi-server', component: MaviServerComponent },
   { path: 'design', component: DesignComponent },
-  { path: 'portfolio', component: PortfolioComponent },
+  { path: 'portfolio-homepage', component: PortfolioComponent },
   { path: 'portfolio-contact', component: PortfolioContactComponent },
   { path: 'portfolio-about-me', component: PortfolioAboutMeComponent },
 ];
