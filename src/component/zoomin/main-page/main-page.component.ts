@@ -11,7 +11,4 @@ import { Router } from '@angular/router';
 export class MainPageComponent {
   constructor(private router: Router) {}
 
-  navigateToSecond() {
-    this.router.navigate(['/second']);
-  }
 }
