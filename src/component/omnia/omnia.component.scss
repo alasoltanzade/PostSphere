@@ -1,6 +1,7 @@
 .container-fluid {
   background: #000;
   color: #fff;
+  overflow-x: hidden;
 }
 
 .text1 {
@@ -52,6 +53,7 @@
 }
 
 .text6 {
+  white-space: nowrap;
   text-align: center;
   font-family: "Big John PRO";
   font-size: 22px;
@@ -437,21 +439,6 @@
   transition: opacity 4s ease-out, transform 1s ease-out;
 }
 
-
-
-.animate-fadeinright {
-  opacity: 1;
-  transform: translateX(145%);
-  transition: opacity 4s ease-out, transform 1s ease-out;
-}
-
-.animate-fadeinright1 {
-  opacity: 1;
-  transform: translateX(230%);
-  transition: opacity 4s ease-out, transform 1s ease-out;
-}
-
-
 /* انیمیشن Flip Left */
 .animate-flipleft {
   opacity: 1;
@@ -461,7 +448,6 @@
 }
 
 
-
 .animate-fadeinleftt {
   opacity: 1;
   transform: translateX(-7%);
@@ -469,11 +455,17 @@
 }
 
 .animate-fadeinright3 {
-  opacity: 1;
-  transform: translateX(-115%);
-  transition: opacity 2s ease-out, transform 3s ease-out;
+  opacity: 0;
+  transform: translateX(50vw);
+  animation: fadeInRight3 2s ease-out forwards;
 }
 
+@keyframes fadeInRight3 {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
 ::ng-deep.p-button {
   background-color: unset !important;
@@ -558,4 +550,36 @@
   line-height: normal;
   letter-spacing: 0.15px;
   text-transform: capitalize;
+}
+
+
+
+@media (max-width: 426px) {
+  .img1 {
+    width: 50%;
+    height: 50%;
+  }
+
+  .text1 {
+    font-size: 20px;
+  }
+
+  .text6 {
+    white-space: unset;
+    display: flex;
+  }
+
+  .text11 {
+    font-size: 25px;
+    white-space: unset !important;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .notshow {
+    display: none !important;
+  }
 }

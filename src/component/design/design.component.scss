@@ -1,5 +1,6 @@
 .container-fluid {
   background: #1C2125;
+  overflow-x: hidden;
 }
 
 .bg-img {
@@ -166,6 +167,7 @@
   margin-top: 10%;
   margin-bottom: 10%;
 }
+
 .marginY1 {
   margin-top: 5%;
   margin-bottom: 5%;
@@ -189,4 +191,37 @@
   font-style: italic;
   font-weight: 300;
   line-height: 124%;
+}
+
+@media (max-width: 426px) {
+  .text1 {
+    font-size: 20px !important;
+  }
+
+  .text2 {
+    font-size: 20px !important;
+  }
+
+  .text3 {
+    font-size: 20px !important;
+  }
+
+  .text7 {
+    font-size: 50px !important;
+  }
+
+  .marginsmall {
+    margin-top: 50% !important;
+    margin-bottom: 30% !important;
+  }
+
+
+  .column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .notshow {
+    display: none !important;
+  }
 }
