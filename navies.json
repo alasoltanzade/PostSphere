@@ -1,0 +1,252 @@
+{
+	"navies": [
+    {
+        "id": 9,
+        "name": "سافا ۴",
+        "gps_device": {
+            "id": 7,
+            "name": "saafaa1",
+            "uniqueid": "354018110286907",
+            "lastupdate": "2024-07-17T05:14:08.735000Z",
+            "model": null
+        },
+        "serial_number": "db1b0e",
+        "navy_type": {
+            "id": 1,
+            "created_at": "2023-12-13T11:03:53.829945Z",
+            "updated_at": "2023-12-21T07:40:14.224239Z",
+            "type_name": "هیوندا",
+            "usage": "سواری"
+        },
+        "department": {
+            "id": 1,
+            "name": "شرکت سافا",
+            "description": null,
+            "created_at": "2023-10-12T09:36:49.701028Z",
+            "updated_at": "2025-06-17T13:26:33.596133Z"
+        },
+        "last_lat": 29.6098916,
+        "last_lon": 52.5604033,
+        "plaque": "12-ب-987-93",
+        "status": "deviceOffline",
+        "last_position": "POINT(52.5604033 29.6098916)"
+    },
+    {
+        "id": 10,
+        "name": "سافا ۳",
+        "gps_device": {
+            "id": 8,
+            "name": "saafaa 2",
+            "uniqueid": "359632107420009",
+            "lastupdate": "2024-07-16T23:15:04.913000Z",
+            "model": null
+        },
+        "serial_number": "4efa76",
+        "navy_type": {
+            "id": 1,
+            "created_at": "2023-12-13T11:03:53.829945Z",
+            "updated_at": "2023-12-21T07:40:14.224239Z",
+            "type_name": "هیوندا",
+            "usage": "سواری"
+        },
+        "department": {
+            "id": 1,
+            "name": "شرکت سافا",
+            "description": null,
+            "created_at": "2023-10-12T09:36:49.701028Z",
+            "updated_at": "2025-06-17T13:26:33.596133Z"
+        },
+        "last_lat": 29.6684716,
+        "last_lon": 52.450975,
+        "plaque": "13-ط-699-73",
+        "status": "deviceOffline",
+        "last_position": "POINT(52.450975 29.6684716)"
+    },
+    {
+        "id": 11,
+        "name": "پژو پارس",
+        "gps_device": {
+            "id": 9,
+            "name": "اداره پشتیبانی ماشین آلات",
+            "uniqueid": "352093086143392",
+            "lastupdate": "2025-06-17T12:37:34.873000Z",
+            "model": null
+        },
+        "serial_number": "28-26",
+        "navy_type": {
+            "id": 3,
+            "created_at": "2024-06-29T04:21:33.643594Z",
+            "updated_at": "2024-09-18T05:10:01.294896Z",
+            "type_name": "نیسان",
+            "usage": "وانت"
+        },
+        "department": {
+            "id": 10,
+            "name": "اداره پشتیبانی ماشین آلات",
+            "description": null,
+            "created_at": "2024-10-17T04:59:17.769572Z",
+            "updated_at": "2024-10-17T04:59:17.769626Z"
+        },
+        "last_lat": 29.5465483,
+        "last_lon": 52.6080583,
+        "plaque": "14-ت-598-54",
+        "status": "deviceOffline",
+        "last_position": "POINT(52.6080583 29.5465483)"
+    },
+    {
+        "id": 12,
+        "name": "سافا ۵",
+        "gps_device": {
+            "id": 10,
+            "name": "saafaa 4",
+            "uniqueid": "352093085055019",
+            "lastupdate": "2025-06-17T13:19:23.397000Z",
+            "model": null
+        },
+        "serial_number": "b33cc5",
+        "navy_type": {
+            "id": 1,
+            "created_at": "2023-12-13T11:03:53.829945Z",
+            "updated_at": "2023-12-21T07:40:14.224239Z",
+            "type_name": "هیوندا",
+            "usage": "سواری"
+        },
+        "department": {
+            "id": 4,
+            "name": "سازمان اتوبوسرانی",
+            "description": null,
+            "created_at": "2023-10-12T09:39:08.087831Z",
+            "updated_at": "2023-10-12T09:39:08.087873Z"
+        },
+        "last_lat": 29.616145,
+        "last_lon": 52.5705216,
+        "plaque": "14-د-698-93",
+        "status": "deviceOffline",
+        "last_position": "POINT(52.5705216 29.616145)"
+    },
+    {
+        "id": 13,
+        "name": "سافا ۲",
+        "gps_device": {
+            "id": 15,
+            "name": "saafaa 5",
+            "uniqueid": "358480087641751",
+            "lastupdate": "2024-07-17T05:30:53.392000Z",
+            "model": null
+        },
+        "serial_number": "2159dc",
+        "navy_type": {
+            "id": 1,
+            "created_at": "2023-12-13T11:03:53.829945Z",
+            "updated_at": "2023-12-21T07:40:14.224239Z",
+            "type_name": "هیوندا",
+            "usage": "سواری"
+        },
+        "department": {
+            "id": 3,
+            "name": "سازمان آتش نشانی",
+            "description": null,
+            "created_at": "2023-10-12T09:37:13.065059Z",
+            "updated_at": "2023-10-12T09:37:13.065094Z"
+        },
+        "last_lat": 29.6099633,
+        "last_lon": 52.5604416,
+        "plaque": "15-د-569-93",
+        "status": "deviceOffline",
+        "last_position": "POINT(52.5604416 29.6099633)"
+    },
+    {
+        "id": 14,
+        "name": "خدمات نقلیه",
+        "gps_device": {
+            "id": 16,
+            "name": "خدمات نقلیه",
+            "uniqueid": "mmm",
+            "lastupdate": "2024-07-11T10:00:13.957000Z",
+            "model": null
+        },
+        "serial_number": "75078d",
+        "navy_type": {
+            "id": 1,
+            "created_at": "2023-12-13T11:03:53.829945Z",
+            "updated_at": "2023-12-21T07:40:14.224239Z",
+            "type_name": "هیوندا",
+            "usage": "سواری"
+        },
+        "department": {
+            "id": 3,
+            "name": "سازمان آتش نشانی",
+            "description": null,
+            "created_at": "2023-10-12T09:37:13.065059Z",
+            "updated_at": "2023-10-12T09:37:13.065094Z"
+        },
+        "last_lat": 31.800421413526344,
+        "last_lon": 54.40617117645665,
+        "plaque": "95-الف-113-54",
+        "status": "deviceOffline",
+        "last_position": "POINT(54.40617117645665 31.800421413526344)"
+    },
+    {
+        "id": 16,
+        "name": "محمد پوشش",
+        "gps_device": {
+            "id": 17,
+            "name": "pooshesh",
+            "uniqueid": "559761",
+            "lastupdate": "2024-12-04T06:43:40.685000Z",
+            "model": null
+        },
+        "serial_number": "b830af",
+        "navy_type": {
+            "id": 1,
+            "created_at": "2023-12-13T11:03:53.829945Z",
+            "updated_at": "2023-12-21T07:40:14.224239Z",
+            "type_name": "هیوندا",
+            "usage": "سواری"
+        },
+        "department": {
+            "id": 1,
+            "name": "شرکت سافا",
+            "description": null,
+            "created_at": "2023-10-12T09:36:49.701028Z",
+            "updated_at": "2025-06-17T13:26:33.596133Z"
+        },
+        "last_lat": 31.8921067,
+        "last_lon": 54.3551473,
+        "plaque": "55-ب-555-55",
+        "status": "deviceOffline",
+        "last_position": "POINT(54.3551473 31.8921067)"
+    },
+    {
+        "id": 22,
+        "name": null,
+        "gps_device": {
+            "id": 28,
+            "name": "ردیاب کارگران8",
+            "uniqueid": "worker47_ab937db78f0263b",
+            "lastupdate": "2025-06-17T13:24:01.571000Z",
+            "model": null
+        },
+        "serial_number": "6455",
+        "navy_type": {
+            "id": 3,
+            "created_at": "2024-06-29T04:21:33.643594Z",
+            "updated_at": "2024-09-18T05:10:01.294896Z",
+            "type_name": "نیسان",
+            "usage": "وانت"
+        },
+        "department": {
+            "id": 1,
+            "name": "شرکت سافا",
+            "description": null,
+            "created_at": "2023-10-12T09:36:49.701028Z",
+            "updated_at": "2025-06-17T13:26:33.596133Z"
+        },
+        "last_lat": 52.432251,
+        "last_lon": 29.713252,
+        "plaque": "54-پ-256-32",
+        "status": "deviceOnline",
+        "last_position": "POINT(29.713252 52.432251)"
+    }
+]
+}

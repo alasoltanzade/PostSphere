@@ -23,6 +23,10 @@ import { DesignComponent } from './component/design/design.component';
 import { PortfolioComponent } from './component/portfolio/portfolio-homePage/portfolio.component';
 import { PortfolioContactComponent } from './component/portfolio/portfolio-contact/portfolio-contact.component';
 import { PortfolioAboutMeComponent } from './component/portfolio/portfolio-about-me/portfolio-about-me.component';
+import { TaskComponent } from './component/task/task.component';
+import { TaskDashbordComponent } from './component/task/dashbord/dashbord.component';
+import { CreateComponent } from './component/task/create/create.component';
+import { TestimonialsComponent } from './component/task/testimonials/testimonials.component';
 
 export const routes: Routes = [
   { path: 'zoomin', component: MainPageComponent },
@@ -49,4 +53,8 @@ export const routes: Routes = [
   { path: 'portfolio-homepage', component: PortfolioComponent },
   { path: 'portfolio-contact', component: PortfolioContactComponent },
   { path: 'portfolio-about-me', component: PortfolioAboutMeComponent },
+  { path: 'task', component: TaskComponent },
+  { path: 'task/dashbord', component: TaskDashbordComponent },
+  { path: 'task/create', component: CreateComponent },
+  { path: 'task/testimonials', component: TestimonialsComponent },
 ];
