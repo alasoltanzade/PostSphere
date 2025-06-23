@@ -15,9 +15,20 @@ export class TestimonialsComponent implements OnInit {
   itemsPerPage: number = 3;
   displayedPosts: any[] = [];
   pagedPosts: any[] = [];
+  editingPostId: number | null = null;
+  tempPost: any = {};
 
-  // برای مدیریت کامنت‌های جدید
   newComment: { [key: number]: { author: string; message: string } } = {};
+
+  startEditing(post: any) {
+    this.editingPostId = post.id;
+    this.tempPost = {
+      instrument: post.instrument,
+      description: post.description,
+      name: post.name,
+      year: post.year,
+    };
+  }
 
   constructor() {}
 
@@ -97,6 +108,7 @@ export class TestimonialsComponent implements OnInit {
     this.updatePagedPosts();
   }
 
+  // Pagination
   nextPage() {
     const totalPages = Math.ceil(
       this.displayedPosts.length / this.itemsPerPage
@@ -112,5 +124,44 @@ export class TestimonialsComponent implements OnInit {
       this.currentPage--;
       this.updatePagedPosts();
     }
+  }
+
+  // Delete
+  deletePost(postId: number) {
+    this.posts = this.posts.filter((post) => post.id !== postId);
+    this.displayedPosts = this.displayedPosts.filter(
+      (post) => post.id !== postId
+    );
+
+    localStorage.setItem('posts', JSON.stringify(this.posts));
+
+    const storedComments = localStorage.getItem('comments');
+    if (storedComments) {
+      const comments = JSON.parse(storedComments);
+      const filteredComments = comments.filter(
+        (comment: any) => comment.postId !== postId
+      );
+      localStorage.setItem('comments', JSON.stringify(filteredComments));
+    }
+
+    this.updatePagedPosts();
+  }
+
+  // Edit
+  saveEdit(post: any) {
+    post.instrument = this.tempPost.instrument;
+    post.description = this.tempPost.description;
+    post.name = this.tempPost.name;
+    post.year = this.tempPost.year;
+
+    post.lastEdited = new Date().toISOString();
+
+    localStorage.setItem('posts', JSON.stringify(this.posts));
+
+    this.editingPostId = null;
+  }
+
+  cancelEdit() {
+    this.editingPostId = null;
   }
 }
