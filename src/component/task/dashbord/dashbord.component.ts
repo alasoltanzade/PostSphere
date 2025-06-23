@@ -11,6 +11,8 @@ declare var google: any;
   styleUrl: './dashbord.component.scss',
 })
 export class TaskDashbordComponent implements OnInit {
+  username = localStorage.getItem('username') || 'کاربر';
+
   constructor(private router: Router) {}
 
   navigateToRadyabi() {
@@ -27,7 +29,7 @@ export class TaskDashbordComponent implements OnInit {
       {
         center: { lat: 29.5916, lng: 52.5836 },
         zoom: 12,
-        disableDefaultUI: true, 
+        disableDefaultUI: true,
         styles: [
           {
             featureType: 'all',
@@ -42,5 +44,11 @@ export class TaskDashbordComponent implements OnInit {
         ],
       }
     );
+  }
+
+  logout() {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('username');
+    this.router.navigate(['/task']);
   }
 }

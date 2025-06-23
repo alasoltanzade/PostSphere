@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-testimonials',
@@ -17,8 +18,9 @@ export class TestimonialsComponent implements OnInit {
   pagedPosts: any[] = [];
   editingPostId: number | null = null;
   tempPost: any = {};
-
+  currentUser: string | null = null;
   newComment: { [key: number]: { author: string; message: string } } = {};
+  userFollowing: any = {};
 
   startEditing(post: any) {
     this.editingPostId = post.id;
@@ -30,9 +32,26 @@ export class TestimonialsComponent implements OnInit {
     };
   }
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
+    // دریافت نام کاربر از localStorage
+    this.currentUser = localStorage.getItem('username');
+    if (!this.currentUser) {
+      // اگر کاربر لاگین نکرده باشد، به صفحه لاگین هدایت شود
+      this.router.navigate(['/task']);
+      return;
+    }
+
+    const storedFollowing = localStorage.getItem('userFollowing');
+    this.userFollowing = storedFollowing ? JSON.parse(storedFollowing) : {};
+
+    // اگر کاربر فعلی اطلاعات فالو ندارد، آن را ایجاد کنید
+    if (!this.userFollowing[this.currentUser]) {
+      this.userFollowing[this.currentUser] = [];
+      this.saveFollowing();
+    }
+
     this.loadPosts();
     this.updatePagedPosts();
   }
@@ -41,6 +60,85 @@ export class TestimonialsComponent implements OnInit {
     const storedPosts = localStorage.getItem('posts');
     this.posts = storedPosts ? JSON.parse(storedPosts) : [];
     this.displayedPosts = [...this.posts];
+
+    this.posts.forEach((post) => {
+      if (!post.likes) {
+        post.likes = {
+          count: 0,
+          users: [],
+        };
+      }
+    });
+
+    this.displayedPosts = [...this.posts];
+  }
+
+  isPostOwner(post: any): boolean {
+    return post.name === this.currentUser;
+  }
+  tartEditing(post: any) {
+    // فقط اگر کاربر مالک پست است اجازه ویرایش دهد
+    if (!this.isPostOwner(post)) {
+      alert('شما فقط می‌توانید پست‌های خود را ویرایش کنید!');
+      return;
+    }
+
+    this.editingPostId = post.id;
+    this.tempPost = {
+      instrument: post.instrument,
+      description: post.description,
+      name: post.name,
+      year: post.year,
+    };
+  }
+
+  saveEdit(post: any) {
+    // فقط اگر کاربر مالک پست است اجازه ذخیره ویرایش دهد
+    if (!this.isPostOwner(post)) {
+      alert('شما اجازه ویرایش این پست را ندارید!');
+      this.editingPostId = null;
+      return;
+    }
+
+    post.instrument = this.tempPost.instrument;
+    post.description = this.tempPost.description;
+    post.name = this.tempPost.name;
+    post.year = this.tempPost.year;
+
+    post.lastEdited = new Date().toISOString();
+
+    localStorage.setItem('posts', JSON.stringify(this.posts));
+
+    this.editingPostId = null;
+  }
+
+  deletePost(postId: number) {
+    // پیدا کردن پست برای بررسی مالکیت
+    const post = this.posts.find((p) => p.id === postId);
+
+    // فقط اگر کاربر مالک پست است اجازه حذف دهد
+    if (!post || !this.isPostOwner(post)) {
+      alert('شما فقط می‌توانید پست‌های خود را حذف کنید!');
+      return;
+    }
+
+    this.posts = this.posts.filter((post) => post.id !== postId);
+    this.displayedPosts = this.displayedPosts.filter(
+      (post) => post.id !== postId
+    );
+
+    localStorage.setItem('posts', JSON.stringify(this.posts));
+
+    const storedComments = localStorage.getItem('comments');
+    if (storedComments) {
+      const comments = JSON.parse(storedComments);
+      const filteredComments = comments.filter(
+        (comment: any) => comment.postId !== postId
+      );
+      localStorage.setItem('comments', JSON.stringify(filteredComments));
+    }
+
+    this.updatePagedPosts();
   }
 
   updatePagedPosts() {
@@ -62,11 +160,29 @@ export class TestimonialsComponent implements OnInit {
     return allComments.filter((comment: any) => comment.postId === postId);
   }
 
+  // like
   toggleLike(post: any) {
-    post.liked = !post.liked;
+    if (!this.currentUser) {
+      alert('برای لایک کردن باید وارد حساب کاربری خود شوید');
+      return;
+    }
+    const userIndex = post.likes.users.indexOf(this.currentUser);
+
+    if (userIndex !== -1) {
+      post.likes.users.splice(userIndex, 1);
+      post.likes.count--;
+    } else {
+      post.likes.users.push(this.currentUser);
+      post.likes.count++;
+    }
+
     localStorage.setItem('posts', JSON.stringify(this.posts));
   }
+  hasLiked(post: any): boolean {
+    return this.currentUser && post.likes.users.includes(this.currentUser);
+  }
 
+  // Comment
   addComment(post: any) {
     const commentData = {
       postId: post.id,
@@ -125,43 +241,51 @@ export class TestimonialsComponent implements OnInit {
       this.updatePagedPosts();
     }
   }
-
-  // Delete
-  deletePost(postId: number) {
-    this.posts = this.posts.filter((post) => post.id !== postId);
-    this.displayedPosts = this.displayedPosts.filter(
-      (post) => post.id !== postId
-    );
-
-    localStorage.setItem('posts', JSON.stringify(this.posts));
-
-    const storedComments = localStorage.getItem('comments');
-    if (storedComments) {
-      const comments = JSON.parse(storedComments);
-      const filteredComments = comments.filter(
-        (comment: any) => comment.postId !== postId
-      );
-      localStorage.setItem('comments', JSON.stringify(filteredComments));
-    }
-
-    this.updatePagedPosts();
-  }
-
-  // Edit
-  saveEdit(post: any) {
-    post.instrument = this.tempPost.instrument;
-    post.description = this.tempPost.description;
-    post.name = this.tempPost.name;
-    post.year = this.tempPost.year;
-
-    post.lastEdited = new Date().toISOString();
-
-    localStorage.setItem('posts', JSON.stringify(this.posts));
-
-    this.editingPostId = null;
-  }
-
   cancelEdit() {
     this.editingPostId = null;
+  }
+
+  // follow
+  saveFollowing() {
+    localStorage.setItem('userFollowing', JSON.stringify(this.userFollowing));
+  }
+
+  toggleFollow(author: string) {
+    if (!this.currentUser) {
+      alert('برای فالو کردن باید وارد حساب کاربری خود شوید');
+      return;
+    }
+
+    if (this.currentUser === author) {
+      alert('شما نمی‌توانید خودتان را فالو کنید');
+      return;
+    }
+
+    const userFollowingList = this.userFollowing[this.currentUser];
+    const index = userFollowingList.indexOf(author);
+
+    if (index !== -1) {
+      userFollowingList.splice(index, 1);
+    } else {
+      userFollowingList.push(author);
+    }
+
+    this.saveFollowing();
+  }
+
+  isFollowing(author: string): boolean {
+    return (
+      this.currentUser && this.userFollowing[this.currentUser]?.includes(author)
+    );
+  }
+
+  getFollowerCount(author: string): number {
+    let count = 0;
+    for (const user in this.userFollowing) {
+      if (this.userFollowing[user].includes(author)) {
+        count++;
+      }
+    }
+    return count;
   }
 }

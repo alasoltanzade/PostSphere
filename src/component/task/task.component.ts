@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-task',
-  imports: [],
   templateUrl: './task.component.html',
   styleUrl: './task.component.scss',
 })
@@ -11,6 +10,44 @@ export class TaskComponent {
   constructor(private router: Router) {}
 
   navigateToLogin() {
-    this.router.navigate(['/task/dashbord']);
+    const username = (document.getElementById('username') as HTMLInputElement)
+      .value;
+    const password = (document.getElementById('password') as HTMLInputElement)
+      .value;
+
+    if (this.validateUser(username, password)) {
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('username', username);
+
+      this.router.navigate(['/task/dashbord']);
+    } else {
+      alert('نام کاربری یا رمز عبور اشتباه است!');
+    }
   }
+
+
+
+  private validateUser(username: string, password: string): boolean {
+    const validUsers = [
+      { username: 'admin', password: '12345' },
+      { username: 'soltanzade', password: '12345' },
+      { username: 'mosavi', password: '12345' },
+      { username: 'dehghan', password:'12345'},
+    ];
+
+    return validUsers.some(
+      (user) => user.username === username && user.password === password
+    );
+  }
+
 }
+
+
+// name karbar - Done
+// like count - Done
+// account  - Done
+// edit post khodet - Done
+// follower  & following bashe tedad - Done
+// profile tedad post folloer - Done
+// reactive form baraye post validation 
+// lazy rout - load component lazy loae

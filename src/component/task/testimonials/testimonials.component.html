@@ -78,14 +78,21 @@
 
                 <div class="d-flex flex-column mb-2">
                   <button class="btn btn-sm btn-outline-primary my-4" (click)="toggleLike(post)">
-                    {{ post.liked ? '❤️ Unlike' : '🤍 Like' }} </button>
-                  <button *ngIf="editingPostId !== post.id" class="btn btn-sm btn-outline-primary"
+                    {{ hasLiked(post) ? '❤️' : '🤍 Like' }}
+                    <span class="badge bg-secondary ms-2">{{ post.likes.count }}</span>
+                  </button>
+
+                  <button *ngIf="isPostOwner(post) && editingPostId !== post.id" class="btn btn-sm btn-outline-primary"
                     (click)="startEditing(post)"> Edit </button>
-                  <button *ngIf="editingPostId === post.id" class="btn btn-sm btn-outline-primary my-4"
-                    (click)="saveEdit(post)"> Save </button>
-                  <button *ngIf="editingPostId === post.id" class="btn btn-sm btn-outline-primary my-4"
-                    (click)="cancelEdit()"> Cancel </button>
-                  <button class="btn btn-sm btn-outline-primary my-4" (click)="deletePost(post.id)"> Delete </button>
+
+                  <button *ngIf="isPostOwner(post) && editingPostId === post.id"
+                    class="btn btn-sm btn-outline-primary my-4" (click)="saveEdit(post)"> Save </button>
+
+                  <button *ngIf="isPostOwner(post) && editingPostId === post.id"
+                    class="btn btn-sm btn-outline-primary my-4" (click)="cancelEdit()"> Cancel </button>
+
+                  <button *ngIf="isPostOwner(post)" class="btn btn-sm btn-outline-primary my-4"
+                    (click)="deletePost(post.id)"> Delete </button>
                 </div>
 
               </div>
@@ -95,7 +102,7 @@
             <div class="d-flex justify-content-between w-100">
               <div class="comments mt-3">
                 <h5>Comments:</h5>
-                <div *ngFor="let comment of getComments(post.id)" class="comment p-2 mb-2 tm-bg-black-transparent">
+                <div *ngFor="let comment of getComments(post.id)" class="comment p-2 mb-2 tm-bg-black">
                   <p>{{ comment.message }}</p>
                   <small>- {{ comment.name }} at {{ comment.date }}</small>
                 </div>
@@ -114,6 +121,24 @@
                 <button type="submit" class="btn btn-primary btn-sm">Submit Comment</button>
               </form>
             </div>
+
+
+
+
+
+            <div class="d-flex align-items-center mb-2">
+
+              <button *ngIf="currentUser !== post.name" class="btn btn-sm btn-outline-info ms-2"
+                (click)="toggleFollow(post.name)">
+                {{ isFollowing(post.name) ? 'Unfollow' : 'Follow' }}
+              </button>
+
+              <span class="badge ms-2">
+                {{ getFollowerCount(post.name) }} follower
+              </span>
+            </div>
+
+
 
           </div>
         </div>
