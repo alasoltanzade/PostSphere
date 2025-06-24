@@ -28,13 +28,9 @@ export class CreateComponent implements OnInit {
   constructor(private router: Router, private fb: FormBuilder) {}
 
   ngOnInit() {
-    const storedUsername = localStorage.getItem("username");
-    if (storedUsername) {  
-      this.username = storedUsername;
-      this.loadUserStats();
-    } else {
-      this.router.navigate(["/login"]);
-    }
+
+    this.username = localStorage.getItem("username") || "";
+    this.loadUserStats();
 
     const storedCounter = localStorage.getItem("counter");
     this.counter = storedCounter ? parseInt(storedCounter) : 1;
@@ -49,7 +45,7 @@ export class CreateComponent implements OnInit {
     });
   }
 
-  // getter دسترسی مستقیم به ولیدیشن ها - کنترل فرم ها؟
+
   get instrumentControl(): AbstractControl {
     return this.postForm.get("instrument") as AbstractControl;
   }
@@ -59,7 +55,6 @@ export class CreateComponent implements OnInit {
   get yearControl(): AbstractControl {
     return this.postForm.get("year") as AbstractControl;
   }
-
 
   addPost() {
     // validation

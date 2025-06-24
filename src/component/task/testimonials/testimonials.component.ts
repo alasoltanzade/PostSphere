@@ -27,12 +27,7 @@ export class TestimonialsComponent implements OnInit {
 
   ngOnInit() {
     // دریافت نام کاربر
-    this.currentUser = localStorage.getItem("username");
-    if (!this.currentUser) {
-      // اگر کاربر لاگین نکرده باشد، به صفحه لاگین هدایت شود
-      this.router.navigate(["/login"]);
-      return;
-    }
+    this.currentUser = localStorage.getItem("username")!;
 
     const storedFollowing = localStorage.getItem("userFollowing");
     this.userFollowing = storedFollowing ? JSON.parse(storedFollowing) : {};

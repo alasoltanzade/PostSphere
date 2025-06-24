@@ -11,7 +11,7 @@ export class TaskComponent {
 
   navigateToLogin() {
 
-    // get inputt-viewchild
+    // get input-viewchild
     const username = (document.getElementById("username") as HTMLInputElement)
       .value;
     const password = (document.getElementById("password") as HTMLInputElement)
@@ -44,4 +44,4 @@ export class TaskComponent {
 
 
 
-//gurd.ts  -- interseptour token  - service  - login reactive form - directivve 
+//gurd.ts  -- Interceptors token  - service  - login reactive form - directivve 
