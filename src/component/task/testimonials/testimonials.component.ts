@@ -1,16 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
 
 @Component({
-  selector: 'app-testimonials',
+  selector: "app-testimonials",
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './testimonials.component.html',
-  styleUrls: ['./testimonials.component.scss'],
+  templateUrl: "./testimonials.component.html",
+  styleUrls: ["./testimonials.component.scss"],
 })
 export class TestimonialsComponent implements OnInit {
+  // متغیر ها property
   posts: any[] = [];
   currentPage: number = 1;
   itemsPerPage: number = 3;
@@ -22,28 +23,18 @@ export class TestimonialsComponent implements OnInit {
   newComment: { [key: number]: { author: string; message: string } } = {};
   userFollowing: any = {};
 
-  startEditing(post: any) {
-    this.editingPostId = post.id;
-    this.tempPost = {
-      instrument: post.instrument,
-      description: post.description,
-      name: post.name,
-      year: post.year,
-    };
-  }
-
   constructor(private router: Router) {}
 
   ngOnInit() {
-    // دریافت نام کاربر از localStorage
-    this.currentUser = localStorage.getItem('username');
+    // دریافت نام کاربر
+    this.currentUser = localStorage.getItem("username");
     if (!this.currentUser) {
       // اگر کاربر لاگین نکرده باشد، به صفحه لاگین هدایت شود
-      this.router.navigate(['/login']);
+      this.router.navigate(["/login"]);
       return;
     }
 
-    const storedFollowing = localStorage.getItem('userFollowing');
+    const storedFollowing = localStorage.getItem("userFollowing");
     this.userFollowing = storedFollowing ? JSON.parse(storedFollowing) : {};
 
     // اگر کاربر فعلی اطلاعات فالو ندارد، آن را ایجاد کنید
@@ -57,8 +48,8 @@ export class TestimonialsComponent implements OnInit {
   }
 
   loadPosts() {
-    const storedPosts = localStorage.getItem('posts');
-    this.posts = storedPosts ? JSON.parse(storedPosts) : [];
+    const storedPosts = localStorage.getItem("posts");
+    this.posts = storedPosts ? JSON.parse(storedPosts) : []; //clone post to show
     this.displayedPosts = [...this.posts];
 
     this.posts.forEach((post) => {
@@ -76,13 +67,8 @@ export class TestimonialsComponent implements OnInit {
   isPostOwner(post: any): boolean {
     return post.name === this.currentUser;
   }
-  tartEditing(post: any) {
-    // فقط اگر کاربر مالک پست است اجازه ویرایش دهد
-    if (!this.isPostOwner(post)) {
-      alert('شما فقط می‌توانید پست‌های خود را ویرایش کنید!');
-      return;
-    }
 
+  startEditing(post: any) {
     this.editingPostId = post.id;
     this.tempPost = {
       instrument: post.instrument,
@@ -93,21 +79,13 @@ export class TestimonialsComponent implements OnInit {
   }
 
   saveEdit(post: any) {
-    // فقط اگر کاربر مالک پست است اجازه ذخیره ویرایش دهد
-    if (!this.isPostOwner(post)) {
-      alert('شما اجازه ویرایش این پست را ندارید!');
-      this.editingPostId = null;
-      return;
-    }
-
     post.instrument = this.tempPost.instrument;
     post.description = this.tempPost.description;
     post.name = this.tempPost.name;
     post.year = this.tempPost.year;
 
     post.lastEdited = new Date().toISOString();
-
-    localStorage.setItem('posts', JSON.stringify(this.posts));
+    localStorage.setItem("posts", JSON.stringify(this.posts));
 
     this.editingPostId = null;
   }
@@ -115,29 +93,21 @@ export class TestimonialsComponent implements OnInit {
   deletePost(postId: number) {
     // پیدا کردن پست برای بررسی مالکیت
     const post = this.posts.find((p) => p.id === postId);
-
-    // فقط اگر کاربر مالک پست است اجازه حذف دهد
-    if (!post || !this.isPostOwner(post)) {
-      alert('شما فقط می‌توانید پست‌های خود را حذف کنید!');
-      return;
-    }
-
     this.posts = this.posts.filter((post) => post.id !== postId);
     this.displayedPosts = this.displayedPosts.filter(
       (post) => post.id !== postId
     );
 
-    localStorage.setItem('posts', JSON.stringify(this.posts));
+    localStorage.setItem("posts", JSON.stringify(this.posts));
 
-    const storedComments = localStorage.getItem('comments');
+    const storedComments = localStorage.getItem("comments");
     if (storedComments) {
       const comments = JSON.parse(storedComments);
       const filteredComments = comments.filter(
         (comment: any) => comment.postId !== postId
       );
-      localStorage.setItem('comments', JSON.stringify(filteredComments));
+      localStorage.setItem("comments", JSON.stringify(filteredComments));
     }
-
     this.updatePagedPosts();
   }
 
@@ -149,13 +119,13 @@ export class TestimonialsComponent implements OnInit {
     // مقداردهی اولیه کامنت‌های جدید برای هر پست
     this.pagedPosts.forEach((post) => {
       if (!this.newComment[post.id]) {
-        this.newComment[post.id] = { author: '', message: '' };
+        this.newComment[post.id] = { author: "", message: "" };
       }
     });
   }
 
   getComments(postId: number) {
-    const storedComments = localStorage.getItem('comments');
+    const storedComments = localStorage.getItem("comments");
     const allComments = storedComments ? JSON.parse(storedComments) : [];
     return allComments.filter((comment: any) => comment.postId === postId);
   }
@@ -163,7 +133,7 @@ export class TestimonialsComponent implements OnInit {
   // like
   toggleLike(post: any) {
     if (!this.currentUser) {
-      alert('برای لایک کردن باید وارد حساب کاربری خود شوید');
+      alert("برای لایک کردن باید وارد حساب کاربری خود شوید");
       return;
     }
     const userIndex = post.likes.users.indexOf(this.currentUser);
@@ -176,7 +146,7 @@ export class TestimonialsComponent implements OnInit {
       post.likes.count++;
     }
 
-    localStorage.setItem('posts', JSON.stringify(this.posts));
+    localStorage.setItem("posts", JSON.stringify(this.posts));
   }
   hasLiked(post: any): boolean {
     return this.currentUser && post.likes.users.includes(this.currentUser);
@@ -186,18 +156,18 @@ export class TestimonialsComponent implements OnInit {
   addComment(post: any) {
     const commentData = {
       postId: post.id,
-      name: this.newComment[post.id].author || 'Anonymous',
+      name: this.newComment[post.id].author || "Anonymous",
       message: this.newComment[post.id].message,
       date: new Date().toLocaleString(),
     };
 
-    const storedComments = localStorage.getItem('comments');
+    const storedComments = localStorage.getItem("comments");
     const existingComments = storedComments ? JSON.parse(storedComments) : [];
     existingComments.push(commentData);
-    localStorage.setItem('comments', JSON.stringify(existingComments));
+    localStorage.setItem("comments", JSON.stringify(existingComments));
 
     // ریست فیلدهای کامنت
-    this.newComment[post.id] = { author: '', message: '' };
+    this.newComment[post.id] = { author: "", message: "" };
   }
 
   searchPosts(searchTerm: string) {
@@ -219,7 +189,7 @@ export class TestimonialsComponent implements OnInit {
     this.displayedPosts.sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
-      return order === 'new' ? dateB - dateA : dateA - dateB;
+      return order === "new" ? dateB - dateA : dateA - dateB;
     });
     this.updatePagedPosts();
   }
@@ -247,20 +217,14 @@ export class TestimonialsComponent implements OnInit {
 
   // follow
   saveFollowing() {
-    localStorage.setItem('userFollowing', JSON.stringify(this.userFollowing));
+    localStorage.setItem("userFollowing", JSON.stringify(this.userFollowing));
   }
 
   toggleFollow(author: string) {
     if (!this.currentUser) {
-      alert('برای فالو کردن باید وارد حساب کاربری خود شوید');
+      alert("برای فالو کردن باید وارد حساب کاربری خود شوید");
       return;
     }
-
-    if (this.currentUser === author) {
-      alert('شما نمی‌توانید خودتان را فالو کنید');
-      return;
-    }
-
     const userFollowingList = this.userFollowing[this.currentUser];
     const index = userFollowingList.indexOf(author);
 

@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 
+// Lazy-Loaded route
 export const routes: Routes = [
   {
     path: "login",
@@ -28,3 +29,8 @@ export const routes: Routes = [
       ),
   },
 ];
+
+
+
+// { path: "Address",
+//   loadComponent: () => import("path file").then((c) => c.component) }

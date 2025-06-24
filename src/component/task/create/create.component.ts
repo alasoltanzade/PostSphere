@@ -1,70 +1,65 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
   Validators,
   AbstractControl,
-} from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+} from "@angular/forms";
+import { CommonModule } from "@angular/common";
+import { Router } from "@angular/router";
+import { ReactiveFormsModule } from "@angular/forms";
 
 @Component({
-  selector: 'app-create',
+  selector: "app-create",
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './create.component.html',
-  styleUrls: ['./create.component.scss'],
+  templateUrl: "./create.component.html",
+  styleUrls: ["./create.component.scss"],
 })
-
 export class CreateComponent implements OnInit {
   counter: number = 1;
   posts: any[] = [];
-  username: string = '';
+  username: string = "";
   followerCount: number = 0;
   followingCount: number = 0;
   postCount: number = 0;
-
-  // فرم واکنش‌گرا - از ! برای اعلام قطعی بودن مقدار استفاده می‌کنیم
   postForm!: FormGroup;
 
   constructor(private router: Router, private fb: FormBuilder) {}
 
   ngOnInit() {
-    const storedUsername = localStorage.getItem('username');
-    if (storedUsername) {
+    const storedUsername = localStorage.getItem("username");
+    if (storedUsername) {  
       this.username = storedUsername;
       this.loadUserStats();
     } else {
       this.router.navigate(["/login"]);
     }
 
-    const storedCounter = localStorage.getItem('counter');
+    const storedCounter = localStorage.getItem("counter");
     this.counter = storedCounter ? parseInt(storedCounter) : 1;
 
-    const storedPosts = localStorage.getItem('posts');
+    const storedPosts = localStorage.getItem("posts");
     this.posts = storedPosts ? JSON.parse(storedPosts) : [];
 
-    // ایجاد فرم واکنش‌گرا با اعتبارسنجی
     this.postForm = this.fb.group({
-      instrument: ['', [Validators.required, Validators.minLength(2)]],
-      description: ['', [Validators.required, Validators.minLength(10)]],
-      year: ['', [Validators.required, Validators.min(0), Validators.max(100)]],
+      instrument: ["", [Validators.required, Validators.minLength(2)]],
+      description: ["", [Validators.required, Validators.minLength(6)]],
+      year: ["", [Validators.required, Validators.min(0), Validators.max(100)]],
     });
   }
 
-  // getter
+  // getter دسترسی مستقیم به ولیدیشن ها - کنترل فرم ها؟
   get instrumentControl(): AbstractControl {
-    return this.postForm.get('instrument') as AbstractControl;
+    return this.postForm.get("instrument") as AbstractControl;
   }
-
   get descriptionControl(): AbstractControl {
-    return this.postForm.get('description') as AbstractControl;
+    return this.postForm.get("description") as AbstractControl;
+  }
+  get yearControl(): AbstractControl {
+    return this.postForm.get("year") as AbstractControl;
   }
 
-  get yearControl(): AbstractControl {
-    return this.postForm.get('year') as AbstractControl;
-  }
 
   addPost() {
     // validation
@@ -86,21 +81,21 @@ export class CreateComponent implements OnInit {
     };
 
     this.posts.push(newPost);
-    localStorage.setItem('posts', JSON.stringify(this.posts));
-    localStorage.setItem('counter', (++this.counter).toString());
+    localStorage.setItem("posts", JSON.stringify(this.posts));
+    localStorage.setItem("counter", (++this.counter).toString());
 
     this.postCount++;
     this.postForm.reset();
   }
 
   loadUserStats() {
-    const storedPosts = localStorage.getItem('posts');
+    const storedPosts = localStorage.getItem("posts");
     const allPosts = storedPosts ? JSON.parse(storedPosts) : [];
     this.postCount = allPosts.filter(
       (post: any) => post.name === this.username
     ).length;
 
-    const storedFollowing = localStorage.getItem('userFollowing');
+    const storedFollowing = localStorage.getItem("userFollowing");
     const userFollowing = storedFollowing ? JSON.parse(storedFollowing) : {};
     this.followerCount = 0;
     for (const user in userFollowing) {
