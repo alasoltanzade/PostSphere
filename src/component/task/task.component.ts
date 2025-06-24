@@ -25,22 +25,21 @@ export class TaskComponent {
     }
   }
 
-
-
   private validateUser(username: string, password: string): boolean {
     const validUsers = [
       { username: 'admin', password: '12345' },
       { username: 'soltanzade', password: '12345' },
       { username: 'mosavi', password: '12345' },
-      { username: 'dehghan', password:'12345'},
+      { username: 'dehghan', password: '12345' },
+      { username: 'fallahi', password: '12345' },
     ];
 
     return validUsers.some(
       (user) => user.username === username && user.password === password
     );
   }
-
 }
+
 
 
 // name karbar - Done
@@ -49,5 +48,6 @@ export class TaskComponent {
 // edit post khodet - Done
 // follower  & following bashe tedad - Done
 // profile tedad post folloer - Done
-// reactive form baraye post validation 
+// reactive form baraye post validation - Done
+
 // lazy rout - load component lazy loae

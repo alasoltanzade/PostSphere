@@ -1,34 +1,40 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-create',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.scss'],
 })
+
 export class CreateComponent implements OnInit {
   counter: number = 1;
   posts: any[] = [];
-  instrument: string = '';
-  description: string = '';
-  name: string = '';
-  year: string = '';
   username: string = '';
   followerCount: number = 0;
   followingCount: number = 0;
   postCount: number = 0;
 
-  constructor(private router: Router) {}
+  // فرم واکنش‌گرا - از ! برای اعلام قطعی بودن مقدار استفاده می‌کنیم
+  postForm!: FormGroup;
+
+  constructor(private router: Router, private fb: FormBuilder) {}
 
   ngOnInit() {
     const storedUsername = localStorage.getItem('username');
     if (storedUsername) {
       this.username = storedUsername;
-      this.name = storedUsername;
-      this.loadUserStats(); // بارگیری آمار کاربر
+      this.loadUserStats();
     } else {
       this.router.navigate(['/task']);
     }
@@ -38,19 +44,43 @@ export class CreateComponent implements OnInit {
 
     const storedPosts = localStorage.getItem('posts');
     this.posts = storedPosts ? JSON.parse(storedPosts) : [];
+
+    // ایجاد فرم واکنش‌گرا با اعتبارسنجی
+    this.postForm = this.fb.group({
+      instrument: ['', [Validators.required, Validators.minLength(2)]],
+      description: ['', [Validators.required, Validators.minLength(10)]],
+      year: ['', [Validators.required, Validators.min(0), Validators.max(100)]],
+    });
+  }
+
+  // getter
+  get instrumentControl(): AbstractControl {
+    return this.postForm.get('instrument') as AbstractControl;
+  }
+
+  get descriptionControl(): AbstractControl {
+    return this.postForm.get('description') as AbstractControl;
+  }
+
+  get yearControl(): AbstractControl {
+    return this.postForm.get('year') as AbstractControl;
   }
 
   addPost() {
-    if (!this.instrument || !this.description || !this.name || !this.year) {
-      alert('لطفاً تمام فیلدها را پر کنید!');
+    // validation
+    if (!this.postForm || this.postForm.invalid) {
+      this.postForm?.markAllAsTouched();
       return;
     }
 
+    // دریافت مقادیر از فرم
+    const formValues = this.postForm.value;
+
     const newPost = {
-      instrument: this.instrument,
-      description: this.description,
-      name: this.name,
-      year: this.year,
+      instrument: formValues.instrument,
+      description: formValues.description,
+      name: this.username,
+      year: formValues.year,
       date: new Date().toISOString(),
       id: this.counter,
     };
@@ -60,10 +90,7 @@ export class CreateComponent implements OnInit {
     localStorage.setItem('counter', (++this.counter).toString());
 
     this.postCount++;
-    this.instrument = '';
-    this.description = '';
-    this.name = '';
-    this.year = '';
+    this.postForm.reset();
   }
 
   loadUserStats() {

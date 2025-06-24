@@ -62,24 +62,61 @@
 
     <!-- Services header -->
     <div class="col-12">
-
       <div class="tm-bg-black text-center tm-services-header my-5 py-5">
         <h2 class="p-4">UPLOADING YOUR POST</h2>
         <p class="mb-0 small">
-          A Guide to Sharing Your Creative Work.</p>
+          A Guide to Sharing Your Creative Work.
+        </p>
 
-        <form (submit)="addPost()" class="row p-4 gap-5">
-          <input type="text" class="form-control rounded-0" placeholder="instrument name" [(ngModel)]="instrument"
-            name="instrument" required />
+        <!-- Reactive Form -->
+        <form [formGroup]="postForm" (ngSubmit)="addPost()" class="row p-4 gap-5">
+          <!-- instrument -->
+          <div class="form-group">
+            <input type="text" class="form-control rounded-0" placeholder="instrument name" formControlName="instrument"
+              [ngClass]="{'is-invalid': instrumentControl.invalid && instrumentControl.touched}">
 
-          <input type="text" class="form-control rounded-0" placeholder="your description" [(ngModel)]="description"
-            name="description" required />
+            <div *ngIf="instrumentControl.invalid && instrumentControl.touched" class="invalid-feedback">
+              <div *ngIf="instrumentControl.hasError('required')">
+                Instrument name is required
+              </div>
+              <div *ngIf="instrumentControl.hasError('minlength')">
+                Instrument name must be at least 2 characters
+              </div>
+            </div>
+          </div>
 
-          <input type="text" class="form-control rounded-0" placeholder="author" [(ngModel)]="name" name="name"
-            required />
+          <!-- description -->
+          <div class="form-group">
+            <textarea class="form-control rounded-0" placeholder="your description" formControlName="description"
+              rows="3" [ngClass]="{'is-invalid': descriptionControl.invalid && descriptionControl.touched}"></textarea>
 
-          <input type="number" class="form-control rounded-0" placeholder="how many year you play" [(ngModel)]="year"
-            name="year" required />
+            <div *ngIf="descriptionControl.invalid && descriptionControl.touched" class="invalid-feedback">
+              <div *ngIf="descriptionControl.hasError('required')">
+                Description is required
+              </div>
+              <div *ngIf="descriptionControl.hasError('minlength')">
+                Description must be at least 10 characters
+              </div>
+            </div>
+          </div>
+
+          <!-- year -->
+          <div class="form-group">
+            <input type="number" class="form-control rounded-0" placeholder="how many year you play"
+              formControlName="year" [ngClass]="{'is-invalid': yearControl.invalid && yearControl.touched}">
+
+            <div *ngIf="yearControl.invalid && yearControl.touched" class="invalid-feedback">
+              <div *ngIf="yearControl.hasError('required')">
+                Years of experience is required
+              </div>
+              <div *ngIf="yearControl.hasError('min')">
+                Years cannot be negative
+              </div>
+              <div *ngIf="yearControl.hasError('max')">
+                Years cannot be more than 100
+              </div>
+            </div>
+          </div>
 
           <button type="submit" class="btn mt-3 rounded-0 w-50">
             Add
@@ -87,6 +124,10 @@
         </form>
       </div>
     </div>
+
+
+
+
 
   </div>
 

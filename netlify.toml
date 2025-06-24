@@ -1,6 +1,0 @@
-[build]
-  command = "npm install && npm run build -- --configuration production"
-  publish = "dist/my-angular-app"
-
-[environment]
-  NPM_FLAGS = "--legacy-peer-deps"
