@@ -19,7 +19,7 @@ export class TaskComponent {
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('username', username);
 
-      this.router.navigate(['/task/dashbord']);
+      this.router.navigate(['/dashbord']);
     } else {
       alert('نام کاربری یا رمز عبور اشتباه است!');
     }
