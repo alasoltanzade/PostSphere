@@ -39,7 +39,7 @@ export class TestimonialsComponent implements OnInit {
     this.currentUser = localStorage.getItem('username');
     if (!this.currentUser) {
       // اگر کاربر لاگین نکرده باشد، به صفحه لاگین هدایت شود
-      this.router.navigate(['/task']);
+      this.router.navigate(['/login']);
       return;
     }
 

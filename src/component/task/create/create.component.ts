@@ -36,7 +36,7 @@ export class CreateComponent implements OnInit {
       this.username = storedUsername;
       this.loadUserStats();
     } else {
-      this.router.navigate(['/task']);
+      this.router.navigate(["/login"]);
     }
 
     const storedCounter = localStorage.getItem('counter');

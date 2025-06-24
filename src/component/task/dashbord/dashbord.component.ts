@@ -49,6 +49,6 @@ export class TaskDashbordComponent implements OnInit {
   logout() {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('username');
-    this.router.navigate(['/task']);
+    this.router.navigate(["/login"]);
   }
 }

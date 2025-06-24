@@ -49,5 +49,4 @@ export class TaskComponent {
 // follower  & following bashe tedad - Done
 // profile tedad post folloer - Done
 // reactive form baraye post validation - Done
-
 // lazy rout - load component lazy loae
