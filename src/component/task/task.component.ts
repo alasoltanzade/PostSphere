@@ -1,29 +1,63 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { Router } from "@angular/router";
-
+import { CommonModule } from "@angular/common";
 @Component({
   selector: "app-task",
   templateUrl: "./task.component.html",
-  styleUrl: "./task.component.scss",
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  styleUrls: ["./task.component.scss"],
 })
-export class TaskComponent {
-  constructor(private router: Router) {}
+export class TaskComponent implements OnInit {
+  // @ViewChild("usernameInput") usernameInput!: ElementRef<HTMLInputElement>;
+  // @ViewChild("passwordInput") passwordInput!: ElementRef<HTMLInputElement>;
+
+  loginForm!: FormGroup;
+
+  constructor(private fb: FormBuilder, private router: Router) {}
+
+  ngOnInit() {
+    this.createForm();
+  }
+
+  createForm() {
+    this.loginForm = this.fb.group({
+      username: ["", Validators.required],
+      password: ["", Validators.required],
+      captcha: ["", Validators.required],
+    });
+  }
+
+  get usernameControl() {
+    return this.loginForm.get("username")!;
+  }
+  get passwordControl() {
+    return this.loginForm.get("password")!;
+  }
+  get captchaControl() {
+    return this.loginForm.get("captcha")!;
+  }
 
   navigateToLogin() {
+    if (this.loginForm.valid) {
+      const username = this.loginForm.get("username")?.value;
+      const password = this.loginForm.get("password")?.value;
 
-    // get input-viewchild
-    const username = (document.getElementById("username") as HTMLInputElement)
-      .value;
-    const password = (document.getElementById("password") as HTMLInputElement)
-      .value;
-
-    if (this.validateUser(username, password)) {
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("username", username);
-
-      this.router.navigate(["/dashbord"]);
+      if (this.validateUser(username, password)) {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("username", username);
+        this.router.navigate(["/dashbord"]);
+      } else {
+        alert("نام کاربری یا رمز عبور اشتباه است!");
+      }
     } else {
-      alert("نام کاربری یا رمز عبور اشتباه است!");
+      this.loginForm.markAllAsTouched();
     }
   }
 
@@ -40,8 +74,13 @@ export class TaskComponent {
       (user) => user.username === username && user.password === password
     );
   }
+
+  // sendData() {
+  //   const data = { message: "Hello from TaskComponent" };
+  //   this.http
+  //     .post("https://example.com/api/send", data)
+  //     .subscribe((response) => {
+  //       console.log(response);
+  //     });
+  // }
 }
-
-
-
-//gurd.ts  -- Interceptors token  - service  - login reactive form - directivve 

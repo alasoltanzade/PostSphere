@@ -10,26 +10,45 @@
             <span class="text1 text-nowrap">سامانه مدیریت ناوگان (FMS)</span>
             <span>شهرداری شیراز</span>
           </div>
-          <div class="card2">
-            <input type="email" class="input" id="username" required placeholder="نام کاربری">
-            <i class="fas fa-user-alt icon"></i>
-            <input type="password" class="input" id="password" required placeholder="رمز عبور">
-            <div class="row">
-              <div class="col-6">
-                <img src="task/captcha.png" onclick="return oc">
+          <form [formGroup]="loginForm" (ngSubmit)="navigateToLogin()" novalidate>
+            <div class="card2">
+              <input type="text" class="input" formControlName="username" required placeholder="نام کاربری"
+                [ngClass]="{'is-invalid': usernameControl.invalid && usernameControl.touched}">
+              <div *ngIf="usernameControl.invalid && usernameControl.touched" class="invalid-feedback">
+                <div *ngIf="usernameControl.hasError('required')">
+                  نام کاربری الزامی است
+                </div>
               </div>
-
-              <div class="col-6"><input type="text" class="input w-100" placeholder="کد امنیتی"></div>
+              <i class="fas fa-user-alt icon"></i>
+              <input type="password" class="input" formControlName="password" required placeholder="رمز عبور"
+                [ngClass]="{'is-invalid': passwordControl.invalid && passwordControl.touched}">
+              <div *ngIf="passwordControl.invalid && passwordControl.touched" class="invalid-feedback">
+                <div *ngIf="passwordControl.hasError('required')">
+                  رمز عبور الزامی است
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <img src="task/captcha.png" onclick="return oc">
+                </div>
+                <div class="col-6 mb-3">
+                  <input type="text" class="input w-100" formControlName="captcha" placeholder="کد امنیتی"
+                    [ngClass]="{'is-invalid': captchaControl.invalid && captchaControl.touched}">
+                  <div *ngIf="captchaControl.invalid && captchaControl.touched" class="invalid-feedback">
+                    <div *ngIf="captchaControl.hasError('required')">
+                      کد امنیتی الزامی است
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-
-          <div class="card2">
-            <button type="submit" class="btnLogin w-100" (click)="navigateToLogin()">ورود به سامانه</button>
-            <button type="submit" class="btnLogin1 w-100">ورود با احراز هویت مرکزی (SSO)</button>
-          </div>
+            <div class="card2">
+              <button type="submit" class="btnLogin w-100">ورود به سامانه</button>
+              <button type="button" class="btnLogin1 w-100">ورود با احراز هویت مرکزی (SSO)</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
 </div>
-

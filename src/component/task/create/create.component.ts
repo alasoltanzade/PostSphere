@@ -6,8 +6,8 @@ import {
   AbstractControl,
 } from "@angular/forms";
 import { CommonModule } from "@angular/common";
-import { Router } from "@angular/router";
 import { ReactiveFormsModule } from "@angular/forms";
+import { PostService } from "../../../post.service";
 
 @Component({
   selector: "app-create",
@@ -25,10 +25,9 @@ export class CreateComponent implements OnInit {
   postCount: number = 0;
   postForm!: FormGroup;
 
-  constructor(private router: Router, private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private postService: PostService) {}
 
   ngOnInit() {
-
     this.username = localStorage.getItem("username") || "";
     this.loadUserStats();
 
@@ -44,7 +43,6 @@ export class CreateComponent implements OnInit {
       year: ["", [Validators.required, Validators.min(0), Validators.max(100)]],
     });
   }
-
 
   get instrumentControl(): AbstractControl {
     return this.postForm.get("instrument") as AbstractControl;
@@ -75,9 +73,11 @@ export class CreateComponent implements OnInit {
       id: this.counter,
     };
 
-    this.posts.push(newPost);
-    localStorage.setItem("posts", JSON.stringify(this.posts));
-    localStorage.setItem("counter", (++this.counter).toString());
+    // this.posts.push(newPost);
+    // localStorage.setItem("posts", JSON.stringify(this.posts));
+    // localStorage.setItem("counter", (++this.counter).toString());
+
+    this.postService.addPost(newPost);
 
     this.postCount++;
     this.postForm.reset();
