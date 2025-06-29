@@ -1,5 +1,14 @@
 <div class="position-relative w-100" style="overflow: auto; min-height: 100vh;">
-  <div class="bg-container"> <img src="task/bg-01.jpg" class="bg-img">
+  <!-- Loading indicator -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading posts...</p>
+  </div>
+
+  <div class="bg-container">
+    <img src="task/bg-01.jpg" class="bg-img">
   </div>
 
   <div class="container">
@@ -19,7 +28,7 @@
             <div class="collapse navbar-collapse">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="/dashbord">Home</a>
+                  <a class="nav-link" href="/dashboard">Home</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="/create">Create</a>
@@ -35,8 +44,7 @@
       </div>
     </div>
 
-
-    <div class="row">
+    <div class="row" *ngIf="!isLoading">
       <div class="col-12 text-center">
         <div class="sort-div">
           <label for="sortByDate">Sort by Date:</label>
@@ -47,7 +55,6 @@
         </div>
         <input type="text" class="form-control" id="searchInput" placeholder="search..."
           (input)="searchPosts($any($event.target).value)" />
-
 
         <div class="posts">
           <div *ngFor="let post of pagedPosts" class="post">
@@ -75,7 +82,6 @@
                 </div>
                 <span>{{ post.date | date:'medium' }}</span>
 
-
                 <div class="d-flex flex-column mb-2">
                   <button class="btn btn-sm btn-outline-primary my-4" (click)="toggleLike(post)">
                     {{ hasLiked(post) ? '❤️' : '🤍 Like' }}
@@ -85,8 +91,9 @@
                   <button *ngIf="isPostOwner(post) && editingPostId !== post.id" class="btn btn-sm btn-outline-primary"
                     (click)="startEditing(post)"> Edit </button>
 
+                  <!-- Fixed saveEdit call (removed parameter) -->
                   <button *ngIf="isPostOwner(post) && editingPostId === post.id"
-                    class="btn btn-sm btn-outline-primary my-4" (click)="saveEdit(post)"> Save </button>
+                    class="btn btn-sm btn-outline-primary my-4" (click)="saveEdit()"> Save </button>
 
                   <button *ngIf="isPostOwner(post) && editingPostId === post.id"
                     class="btn btn-sm btn-outline-primary my-4" (click)="cancelEdit()"> Cancel </button>
@@ -94,62 +101,57 @@
                   <button *ngIf="isPostOwner(post)" class="btn btn-sm btn-outline-primary my-4"
                     (click)="deletePost(post.id)"> Delete </button>
                 </div>
-
               </div>
             </div>
-
 
             <div class="d-flex justify-content-between w-100">
               <div class="comments mt-3">
                 <h5>Comments:</h5>
                 <div *ngFor="let comment of getComments(post.id)" class="comment p-2 mb-2 tm-bg-black">
                   <p>{{ comment.message }}</p>
-                  <small>- {{ comment.name }} at {{ comment.date }}</small>
+                  <small>- {{ comment.name }} at {{ comment.date | date:'medium' }}</small>
                 </div>
               </div>
-
 
               <form class="mt-3" (submit)="addComment(post); $event.preventDefault()">
                 <div class="form-group">
                   <input type="text" class="form-control" placeholder="Your name"
-                    [(ngModel)]="newComment[post.id].author" name="author_{{post.id}}">
+                    [(ngModel)]="newComment[post.id].author" [name]="'author_'+post.id">
                 </div>
                 <div class="form-group">
                   <textarea class="form-control" rows="2" placeholder="Your comment"
-                    [(ngModel)]="newComment[post.id].message" name="message_{{post.id}}"></textarea>
+                    [(ngModel)]="newComment[post.id].message" [name]="'message_'+post.id"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary btn-sm">Submit Comment</button>
               </form>
             </div>
 
-
-
-
-
             <div class="d-flex align-items-center mb-2">
-
               <button *ngIf="currentUser !== post.name" class="btn btn-sm btn-outline-info ms-2"
                 (click)="toggleFollow(post.name)">
                 {{ isFollowing(post.name) ? 'Unfollow' : 'Follow' }}
               </button>
 
+              <!-- Fixed follower count display -->
               <span class="badge ms-2">
-                {{ getFollowerCount(post.name) }} follower
+                {{ authorFollowerCounts[post.name] || 0 }} follower{{ authorFollowerCounts[post.name] > 1 ? 's' : '' }}
               </span>
             </div>
-
-
-
           </div>
         </div>
 
+        <div *ngIf="displayedPosts.length === 0" class="alert alert-info mt-4">
+          No posts found. Be the first to create one!
+        </div>
 
-
-        <div class="pagination text-center mt-4">
-          <button class="btn btn-outline-primary" (click)="prevPage()">
-            &larr; Previous </button>
-          <button class="btn btn-outline-primary mx-2" (click)="nextPage()">
-            Next &rarr; </button>
+        <div class="pagination text-center mt-4" *ngIf="displayedPosts.length > 0">
+          <button class="btn btn-outline-primary" (click)="prevPage()" [disabled]="currentPage === 1">
+            &larr; Previous
+          </button>
+          <span class="mx-3">Page {{ currentPage }} of {{ totalPages() }}</span>
+          <button class="btn btn-outline-primary" (click)="nextPage()" [disabled]="currentPage === totalPages()">
+            Next &rarr;
+          </button>
         </div>
       </div>
     </div>

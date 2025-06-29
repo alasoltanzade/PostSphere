@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
@@ -7,6 +7,8 @@ import {
 } from "@angular/forms";
 import { Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
+import { HttpClient } from "@angular/common/http";
+
 @Component({
   selector: "app-task",
   templateUrl: "./task.component.html",
@@ -14,19 +16,14 @@ import { CommonModule } from "@angular/common";
   imports: [CommonModule, ReactiveFormsModule],
   styleUrls: ["./task.component.scss"],
 })
-export class TaskComponent implements OnInit {
-  // @ViewChild("usernameInput") usernameInput!: ElementRef<HTMLInputElement>;
-  // @ViewChild("passwordInput") passwordInput!: ElementRef<HTMLInputElement>;
+export class TaskComponent {
+  loginForm: FormGroup;
 
-  loginForm!: FormGroup;
-
-  constructor(private fb: FormBuilder, private router: Router) {}
-
-  ngOnInit() {
-    this.createForm();
-  }
-
-  createForm() {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private http: HttpClient
+  ) {
     this.loginForm = this.fb.group({
       username: ["", Validators.required],
       password: ["", Validators.required],
@@ -46,41 +43,31 @@ export class TaskComponent implements OnInit {
 
   navigateToLogin() {
     if (this.loginForm.valid) {
-      const username = this.loginForm.get("username")?.value;
-      const password = this.loginForm.get("password")?.value;
+      const { username, password } = this.loginForm.value;
 
-      if (this.validateUser(username, password)) {
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("username", username);
-        this.router.navigate(["/dashbord"]);
-      } else {
-        alert("نام کاربری یا رمز عبور اشتباه است!");
-      }
+      this.http
+        .get<any[]>("http://localhost:3000/users", {
+          params: {
+            username: username,
+            password: password,
+          },
+        })
+        .subscribe({
+          next: (users) => {
+            if (users.length === 1) {
+              localStorage.setItem("isLoggedIn", "true");
+              localStorage.setItem("username", username);
+              this.router.navigate(["/dashbord"]);
+            } else {
+              alert("نام کاربری یا رمز عبور اشتباه است!");
+            }
+          },
+          error: () => {
+            alert("خطا در ارتباط با سرور!");
+          },
+        });
     } else {
       this.loginForm.markAllAsTouched();
     }
   }
-
-  private validateUser(username: string, password: string): boolean {
-    const validUsers = [
-      { username: "admin", password: "12345" },
-      { username: "soltanzade", password: "12345" },
-      { username: "mosavi", password: "12345" },
-      { username: "dehghan", password: "12345" },
-      { username: "fallahi", password: "12345" },
-    ];
-
-    return validUsers.some(
-      (user) => user.username === username && user.password === password
-    );
-  }
-
-  // sendData() {
-  //   const data = { message: "Hello from TaskComponent" };
-  //   this.http
-  //     .post("https://example.com/api/send", data)
-  //     .subscribe((response) => {
-  //       console.log(response);
-  //     });
-  // }
 }

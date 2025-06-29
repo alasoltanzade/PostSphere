@@ -1,12 +1,14 @@
 import { Routes } from "@angular/router";
 import { authGuard } from "./auth.guard";
+import { loginGuard } from "./login.guard";
 
-// Lazy-Loaded route
+
 export const routes: Routes = [
   {
     path: "login",
     loadComponent: () =>
       import("./component/task/task.component").then((c) => c.TaskComponent),
+    // canActivate: [loginGuard],
   },
   {
     path: "dashbord",
@@ -34,7 +36,3 @@ export const routes: Routes = [
   },
 ];
 
-
-
-// { path: "Address",
-//   loadComponent: () => import("path file").then((c) => c.component) }

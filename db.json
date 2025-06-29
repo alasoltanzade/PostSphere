@@ -1,0 +1,54 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "12345"
+    },
+    {
+      "id": 2,
+      "username": "soltanzade",
+      "password": "12345"
+    },
+    {
+      "id": 3,
+      "username": "mosavi",
+      "password": "12345"
+    },
+    {
+      "id": 4,
+      "username": "malksabet",
+      "password": "12345"
+    },
+    {
+      "id": 5,
+      "username": "dehghan",
+      "password": "12345"
+    }
+  ],
+  "posts": [
+    {
+      "id": 1,
+      "instrument": "Piano",
+      "description": "Classic piano",
+      "username": "admin",
+      "year": 3,
+      "date": "2023-10-10T12:00:00Z"
+    },
+    {
+      "instrument": "Guitar",
+      "description": "Classic guitar",
+      "username": "admin",
+      "year": 5,
+      "date": "2023-10-10T12:00:00Z"
+    },
+    {
+      "instrument": "drum",
+      "description": "loundly instrument",
+      "year": 8,
+      "username": "soltanzade",
+      "date": "2025-06-28T14:48:35.652Z",
+      "id": 2
+    }
+  ]
+}

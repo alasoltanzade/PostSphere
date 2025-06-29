@@ -8,6 +8,7 @@ import {
 import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule } from "@angular/forms";
 import { PostService } from "../../../post.service";
+import { UserStats } from "../../../model/user-stats.model";
 
 @Component({
   selector: "app-create",
@@ -17,26 +18,22 @@ import { PostService } from "../../../post.service";
   styleUrls: ["./create.component.scss"],
 })
 export class CreateComponent implements OnInit {
-  counter: number = 1;
-  posts: any[] = [];
   username: string = "";
   followerCount: number = 0;
   followingCount: number = 0;
   postCount: number = 0;
   postForm!: FormGroup;
+  isLoading = false;
 
   constructor(private fb: FormBuilder, private postService: PostService) {}
 
   ngOnInit() {
     this.username = localStorage.getItem("username") || "";
+    this.initForm();
     this.loadUserStats();
+  }
 
-    const storedCounter = localStorage.getItem("counter");
-    this.counter = storedCounter ? parseInt(storedCounter) : 1;
-
-    const storedPosts = localStorage.getItem("posts");
-    this.posts = storedPosts ? JSON.parse(storedPosts) : [];
-
+  private initForm() {
     this.postForm = this.fb.group({
       instrument: ["", [Validators.required, Validators.minLength(2)]],
       description: ["", [Validators.required, Validators.minLength(6)]],
@@ -45,64 +42,55 @@ export class CreateComponent implements OnInit {
   }
 
   get instrumentControl(): AbstractControl {
-    return this.postForm.get("instrument") as AbstractControl;
+    return this.postForm.get("instrument")!;
   }
   get descriptionControl(): AbstractControl {
-    return this.postForm.get("description") as AbstractControl;
+    return this.postForm.get("description")!;
   }
   get yearControl(): AbstractControl {
-    return this.postForm.get("year") as AbstractControl;
+    return this.postForm.get("year")!;
   }
 
   addPost() {
-    // validation
-    if (!this.postForm || this.postForm.invalid) {
-      this.postForm?.markAllAsTouched();
+    if (this.postForm.invalid) {
+      this.postForm.markAllAsTouched();
       return;
     }
 
-    // دریافت مقادیر از فرم
-    const formValues = this.postForm.value;
-
+    this.isLoading = true;
     const newPost = {
-      instrument: formValues.instrument,
-      description: formValues.description,
-      name: this.username,
-      year: formValues.year,
+      ...this.postForm.value,
+      username: this.username,
       date: new Date().toISOString(),
-      id: this.counter,
     };
 
-    // this.posts.push(newPost);
-    // localStorage.setItem("posts", JSON.stringify(this.posts));
-    // localStorage.setItem("counter", (++this.counter).toString());
-
-    this.postService.addPost(newPost);
-
-    this.postCount++;
-    this.postForm.reset();
+    this.postService.createPost(newPost).subscribe({
+      next: () => {
+        this.postForm.reset();
+        this.loadUserStats();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error("Post creation failed", err);
+        this.isLoading = false;
+      },
+    });
   }
-
+  // Update in create.component.ts
   loadUserStats() {
-    const storedPosts = localStorage.getItem("posts");
-    const allPosts = storedPosts ? JSON.parse(storedPosts) : [];
-    this.postCount = allPosts.filter(
-      (post: any) => post.name === this.username
-    ).length;
-
-    const storedFollowing = localStorage.getItem("userFollowing");
-    const userFollowing = storedFollowing ? JSON.parse(storedFollowing) : {};
-    this.followerCount = 0;
-    for (const user in userFollowing) {
-      if (userFollowing[user].includes(this.username)) {
-        this.followerCount++;
-      }
-    }
-
-    if (userFollowing[this.username]) {
-      this.followingCount = userFollowing[this.username].length;
-    } else {
-      this.followingCount = 0;
-    }
+    this.postService.getUserStats(this.username).subscribe({
+      next: (stats: any) => {
+        this.postCount = stats.postCount || 0;
+        this.followerCount = stats.followers || 0;
+        this.followingCount = stats.following || 0;
+      },
+      error: (err) => {
+        console.error("Failed to load user stats", err);
+        // Set default values
+        this.postCount = 0;
+        this.followerCount = 0;
+        this.followingCount = 0;
+      },
+    });
   }
 }

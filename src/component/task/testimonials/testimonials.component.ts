@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
+import { PostService } from "../../../post.service";
 
 @Component({
   selector: "app-testimonials",
@@ -11,7 +12,6 @@ import { Router } from "@angular/router";
   styleUrls: ["./testimonials.component.scss"],
 })
 export class TestimonialsComponent implements OnInit {
-  // متغیر ها property
   posts: any[] = [];
   currentPage: number = 1;
   itemsPerPage: number = 3;
@@ -21,32 +21,91 @@ export class TestimonialsComponent implements OnInit {
   tempPost: any = {};
   currentUser: string | null = null;
   newComment: { [key: number]: { author: string; message: string } } = {};
-  userFollowing: any = {};
+  userFollowing: string[] = [];
+  authorFollowerCounts: { [author: string]: number } = {};
+  allComments: any[] = [];
+  isLoading = true;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private postService: PostService) {}
 
   ngOnInit() {
-    // دریافت نام کاربر
     this.currentUser = localStorage.getItem("username")!;
-
-    const storedFollowing = localStorage.getItem("userFollowing");
-    this.userFollowing = storedFollowing ? JSON.parse(storedFollowing) : {};
-
-    // اگر کاربر فعلی اطلاعات فالو ندارد، آن را ایجاد کنید
-    if (!this.userFollowing[this.currentUser]) {
-      this.userFollowing[this.currentUser] = [];
-      this.saveFollowing();
-    }
-
-    this.loadPosts();
-    this.updatePagedPosts();
+    this.loadData();
   }
 
-  loadPosts() {
-    const storedPosts = localStorage.getItem("posts");
-    this.posts = storedPosts ? JSON.parse(storedPosts) : []; //clone post to show
-    this.displayedPosts = [...this.posts];
+  async loadData() {
+    try {
+      // Load posts
+      const postsResponse = await this.postService.getPosts().toPromise();
+      this.posts = Array.isArray(postsResponse)
+        ? postsResponse.map((post) => ({ ...post, name: post.username }))
+        : [];
 
+      // Load comments
+      const commentsResponse = await this.postService.getComments().toPromise();
+      this.allComments = Array.isArray(commentsResponse)
+        ? commentsResponse
+        : [];
+
+      // Load following
+      if (this.currentUser) {
+        const followingResponse = await this.postService
+          .getFollowing(this.currentUser)
+          .toPromise();
+        this.userFollowing = Array.isArray(followingResponse)
+          ? followingResponse
+          : [];
+      }
+
+      // Load follower counts
+      await this.loadFollowerCounts();
+
+      this.initializeDisplay();
+    } catch (error) {
+      console.error("Failed to load data", error);
+      // Provide safe defaults
+      this.posts = [];
+      this.allComments = [];
+      this.userFollowing = [];
+
+      // Temporary mock data for debugging
+      this.posts = [
+        {
+          id: 1,
+          instrument: "Piano",
+          description: "Classic piano",
+          name: "admin",
+          year: 3,
+          date: new Date().toISOString(),
+          likes: { count: 2, users: [] },
+        },
+      ];
+
+      this.allComments = [
+        {
+          id: 1,
+          postId: 1,
+          name: "John",
+          message: "Great post!",
+          date: new Date().toISOString(),
+        },
+      ];
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  async loadFollowerCounts() {
+    const authors = [...new Set(this.posts.map((p) => p.username))];
+    for (const author of authors) {
+      if (author) {
+        this.authorFollowerCounts[author] =
+          (await this.postService.getFollowerCount(author).toPromise()) || 0;
+      }
+    }
+  }
+
+  initializeDisplay() {
     this.posts.forEach((post) => {
       if (!post.likes) {
         post.likes = {
@@ -57,53 +116,58 @@ export class TestimonialsComponent implements OnInit {
     });
 
     this.displayedPosts = [...this.posts];
+    this.updatePagedPosts();
   }
 
   isPostOwner(post: any): boolean {
-    return post.name === this.currentUser;
+    return post.username === this.currentUser;
   }
 
   startEditing(post: any) {
     this.editingPostId = post.id;
-    this.tempPost = {
-      instrument: post.instrument,
-      description: post.description,
-      name: post.name,
-      year: post.year,
-    };
+    this.tempPost = { ...post };
   }
 
-  saveEdit(post: any) {
-    post.instrument = this.tempPost.instrument;
-    post.description = this.tempPost.description;
-    post.name = this.tempPost.name;
-    post.year = this.tempPost.year;
+  async saveEdit() {
+    if (!this.editingPostId) return;
 
-    post.lastEdited = new Date().toISOString();
-    localStorage.setItem("posts", JSON.stringify(this.posts));
+    try {
+      const updatedPost = await this.postService
+        .updatePost(this.editingPostId, this.tempPost)
+        .toPromise();
 
-    this.editingPostId = null;
-  }
+      // Update local state
+      const index = this.posts.findIndex((p) => p.id === this.editingPostId);
+      if (index !== -1) {
+        this.posts[index] = updatedPost;
+        this.displayedPosts = [...this.posts];
+      }
 
-  deletePost(postId: number) {
-    // پیدا کردن پست برای بررسی مالکیت
-    const post = this.posts.find((p) => p.id === postId);
-    this.posts = this.posts.filter((post) => post.id !== postId);
-    this.displayedPosts = this.displayedPosts.filter(
-      (post) => post.id !== postId
-    );
-
-    localStorage.setItem("posts", JSON.stringify(this.posts));
-
-    const storedComments = localStorage.getItem("comments");
-    if (storedComments) {
-      const comments = JSON.parse(storedComments);
-      const filteredComments = comments.filter(
-        (comment: any) => comment.postId !== postId
-      );
-      localStorage.setItem("comments", JSON.stringify(filteredComments));
+      this.editingPostId = null;
+    } catch (error) {
+      console.error("Failed to update post", error);
     }
-    this.updatePagedPosts();
+  }
+
+  async deletePost(postId: number) {
+    try {
+      await this.postService.deletePost(postId).toPromise();
+
+      // Update local state
+      this.posts = this.posts.filter((post) => post.id !== postId);
+      this.displayedPosts = this.displayedPosts.filter(
+        (post) => post.id !== postId
+      );
+
+      // Delete comments
+      this.allComments = this.allComments.filter(
+        (comment) => comment.postId !== postId
+      );
+
+      this.updatePagedPosts();
+    } catch (error) {
+      console.error("Failed to delete post", error);
+    }
   }
 
   updatePagedPosts() {
@@ -111,7 +175,6 @@ export class TestimonialsComponent implements OnInit {
     const endIndex = startIndex + this.itemsPerPage;
     this.pagedPosts = this.displayedPosts.slice(startIndex, endIndex);
 
-    // مقداردهی اولیه کامنت‌های جدید برای هر پست
     this.pagedPosts.forEach((post) => {
       if (!this.newComment[post.id]) {
         this.newComment[post.id] = { author: "", message: "" };
@@ -120,49 +183,55 @@ export class TestimonialsComponent implements OnInit {
   }
 
   getComments(postId: number) {
-    const storedComments = localStorage.getItem("comments");
-    const allComments = storedComments ? JSON.parse(storedComments) : [];
-    return allComments.filter((comment: any) => comment.postId === postId);
+    return this.allComments.filter((comment) => comment.postId === postId);
   }
 
-  // like
-  toggleLike(post: any) {
+  async toggleLike(post: any) {
     if (!this.currentUser) {
       alert("برای لایک کردن باید وارد حساب کاربری خود شوید");
       return;
     }
-    const userIndex = post.likes.users.indexOf(this.currentUser);
 
-    if (userIndex !== -1) {
-      post.likes.users.splice(userIndex, 1);
-      post.likes.count--;
-    } else {
-      post.likes.users.push(this.currentUser);
-      post.likes.count++;
+    try {
+      const userIndex = post.likes.users.indexOf(this.currentUser);
+
+      if (userIndex !== -1) {
+        await this.postService
+          .unlikePost(post.id, this.currentUser)
+          .toPromise();
+        post.likes.users.splice(userIndex, 1);
+        post.likes.count--;
+      } else {
+        await this.postService.likePost(post.id, this.currentUser).toPromise();
+        post.likes.users.push(this.currentUser);
+        post.likes.count++;
+      }
+    } catch (error) {
+      console.error("Failed to toggle like", error);
     }
-
-    localStorage.setItem("posts", JSON.stringify(this.posts));
   }
+
   hasLiked(post: any): boolean {
     return this.currentUser && post.likes.users.includes(this.currentUser);
   }
 
-  // Comment
-  addComment(post: any) {
+  async addComment(post: any) {
     const commentData = {
       postId: post.id,
       name: this.newComment[post.id].author || "Anonymous",
       message: this.newComment[post.id].message,
-      date: new Date().toLocaleString(),
+      date: new Date().toISOString(),
     };
 
-    const storedComments = localStorage.getItem("comments");
-    const existingComments = storedComments ? JSON.parse(storedComments) : [];
-    existingComments.push(commentData);
-    localStorage.setItem("comments", JSON.stringify(existingComments));
-
-    // ریست فیلدهای کامنت
-    this.newComment[post.id] = { author: "", message: "" };
+    try {
+      const newComment = await this.postService
+        .addComment(commentData)
+        .toPromise();
+      this.allComments.push(newComment);
+      this.newComment[post.id] = { author: "", message: "" };
+    } catch (error) {
+      console.error("Failed to add comment", error);
+    }
   }
 
   searchPosts(searchTerm: string) {
@@ -206,45 +275,43 @@ export class TestimonialsComponent implements OnInit {
       this.updatePagedPosts();
     }
   }
+
+  totalPages(): number {
+    return Math.ceil(this.displayedPosts.length / this.itemsPerPage);
+  }
+
   cancelEdit() {
     this.editingPostId = null;
   }
 
-  // follow
-  saveFollowing() {
-    localStorage.setItem("userFollowing", JSON.stringify(this.userFollowing));
-  }
-
-  toggleFollow(author: string) {
+  async toggleFollow(author: string) {
     if (!this.currentUser) {
       alert("برای فالو کردن باید وارد حساب کاربری خود شوید");
       return;
     }
-    const userFollowingList = this.userFollowing[this.currentUser];
-    const index = userFollowingList.indexOf(author);
 
-    if (index !== -1) {
-      userFollowingList.splice(index, 1);
-    } else {
-      userFollowingList.push(author);
+    try {
+      const isFollowing = this.userFollowing.includes(author);
+
+      if (isFollowing) {
+        await this.postService
+          .unfollowUser(this.currentUser, author)
+          .toPromise();
+        this.userFollowing = this.userFollowing.filter((u) => u !== author);
+      } else {
+        await this.postService.followUser(this.currentUser, author).toPromise();
+        this.userFollowing.push(author);
+      }
+
+      // Update follower count
+      this.authorFollowerCounts[author] =
+        (await this.postService.getFollowerCount(author).toPromise()) || 0;
+    } catch (error) {
+      console.error("Failed to toggle follow", error);
     }
-
-    this.saveFollowing();
   }
 
   isFollowing(author: string): boolean {
-    return (
-      this.currentUser && this.userFollowing[this.currentUser]?.includes(author)
-    );
-  }
-
-  getFollowerCount(author: string): number {
-    let count = 0;
-    for (const user in this.userFollowing) {
-      if (this.userFollowing[user].includes(author)) {
-        count++;
-      }
-    }
-    return count;
+    return this.userFollowing.includes(author);
   }
 }

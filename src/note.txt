@@ -31,10 +31,18 @@ ngOnInit
  
 
 
+
+// gurd login  - done
+
+
+
+
  pipe
 
 
 local stroge ber ro api call beshe json biad http client
 post ke ijad backend
 
-gurd login 
+
+
+
