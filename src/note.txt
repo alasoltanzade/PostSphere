@@ -2,6 +2,7 @@
 اجازه‌دهی به مسیریابی را کنترل
 CanActivate: بررسی می‌کند که آیا یک کاربر می‌تواند به یک مسیر خاص دسترسی داشته باشد یا خیر
 
+// pipe
 
 
 //Interceptors token
@@ -37,7 +38,6 @@ ngOnInit
 
 
 
- pipe
 
 
 local stroge ber ro api call beshe json biad http client
@@ -46,3 +46,15 @@ post ke ijad backend
 
 
 
+
+
+
+
+// interface متغیر ها تایپ دار بشن مدل ها جدا بشن هر کدوم    --- Done
+// برای پست متغیر ها بیاد روی تایتل و فرمش کامل جدا بشن   ---Done
+// interceptor - app config  اضافه بشه           ---Done
+
+// openlayers - add location -modal open
+// type safe باشه
+// logout
+// ntt interface rout ها رو ببریم روی اینا

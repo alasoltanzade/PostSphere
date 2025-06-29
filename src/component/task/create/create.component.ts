@@ -9,6 +9,7 @@ import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule } from "@angular/forms";
 import { PostService } from "../../../post.service";
 import { UserStats } from "../../../model/user-stats.model";
+import { Post } from "../../../model/post.model";
 
 @Component({
   selector: "app-create",
@@ -19,9 +20,11 @@ import { UserStats } from "../../../model/user-stats.model";
 })
 export class CreateComponent implements OnInit {
   username: string = "";
-  followerCount: number = 0;
-  followingCount: number = 0;
-  postCount: number = 0;
+  userStats: UserStats = {
+    postCount: 0,
+    followers: 0,
+    following: 0,
+  };
   postForm!: FormGroup;
   isLoading = false;
 
@@ -57,40 +60,57 @@ export class CreateComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
-    const newPost = {
-      ...this.postForm.value,
+    this.isLoading = true; //تنظیم وضعیت بارگذاری
+
+    // const newPost = {
+    //   ...this.postForm.value, //مقادیر فرم (instrument, description, year)
+    //   username: this.username, //نام کاربری از سرویس احراز هویت گرفته شده
+    //   date: new Date().toISOString(),
+    // };
+
+    const newPost: Post = {
+      instrument: this.postForm.value.instrument,
+      description: this.postForm.value.description,
+      year: this.postForm.value.year,
       username: this.username,
       date: new Date().toISOString(),
+      id: 0,
+      name: ""
     };
 
+
+
     this.postService.createPost(newPost).subscribe({
+      //ارسال درخواست ایجاد پست
       next: () => {
-        this.postForm.reset();
-        this.loadUserStats();
+        this.postForm.reset(); //reset form
+        this.loadUserStats(); // بارگذاری مجدد آمار کاربر
         this.isLoading = false;
       },
       error: (err) => {
-        console.error("Post creation failed", err);
+        console.error("Post creation failed!!!!!!!!!", err);
         this.isLoading = false;
       },
     });
   }
-  // Update in create.component.ts
+
   loadUserStats() {
     this.postService.getUserStats(this.username).subscribe({
-      next: (stats: any) => {
-        this.postCount = stats.postCount || 0;
-        this.followerCount = stats.followers || 0;
-        this.followingCount = stats.following || 0;
+      next: (stats: UserStats) => {
+        this.userStats = {
+          postCount: stats.postCount ?? 0,
+          followers: stats.followers ?? 0,
+          following: stats.following ?? 0,
+        };
       },
       error: (err) => {
         console.error("Failed to load user stats", err);
-        // Set default values
-        this.postCount = 0;
-        this.followerCount = 0;
-        this.followingCount = 0;
+        this.resetUserStats();
       },
     });
+  }
+
+  private resetUserStats() {
+    this.userStats = { postCount: 0, followers: 0, following: 0 };
   }
 }

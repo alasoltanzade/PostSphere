@@ -3,6 +3,10 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { PostService } from "../../../post.service";
+import { Post, Like } from "../../../model/post.model";
+import { FollowerCount } from "../../../model/follower.model";
+import { PostComment } from "../../../model/comment.model";
+import { ChangeDetectorRef } from "@angular/core";
 
 @Component({
   selector: "app-testimonials",
@@ -12,46 +16,53 @@ import { PostService } from "../../../post.service";
   styleUrls: ["./testimonials.component.scss"],
 })
 export class TestimonialsComponent implements OnInit {
-  posts: any[] = [];
+  posts: Post[] = [];
   currentPage: number = 1;
   itemsPerPage: number = 3;
-  displayedPosts: any[] = [];
-  pagedPosts: any[] = [];
+  displayedPosts: Post[] = [];
+  pagedPosts: Post[] = [];
   editingPostId: number | null = null;
-  tempPost: any = {};
+  tempPost: Partial<Post> = {};
   currentUser: string | null = null;
   newComment: { [key: number]: { author: string; message: string } } = {};
   userFollowing: string[] = [];
-  authorFollowerCounts: { [author: string]: number } = {};
-  allComments: any[] = [];
+  authorFollowerCounts: FollowerCount = {};
+  allComments: PostComment[] = [];
   isLoading = true;
 
-  constructor(private router: Router, private postService: PostService) {}
+  constructor(
+    private router: Router,
+    private postService: PostService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.currentUser = localStorage.getItem("username")!;
     this.loadData();
   }
 
+  //بارگذاری اولیه داده‌ها
   async loadData() {
     try {
       // Load posts
       const postsResponse = await this.postService.getPosts().toPromise();
-      this.posts = Array.isArray(postsResponse)
-        ? postsResponse.map((post) => ({ ...post, name: post.username }))
-        : [];
+      this.posts = ((postsResponse as Post[]) || []).map((post) => ({
+        ...post,
+        name: post.username,
+        likes: post.likes || { count: 0, users: [] },
+      }));
 
       // Load comments
       const commentsResponse = await this.postService.getComments().toPromise();
-      this.allComments = Array.isArray(commentsResponse)
-        ? commentsResponse
-        : [];
+      this.allComments = (commentsResponse as PostComment[]) || [];
 
       // Load following
       if (this.currentUser) {
         const followingResponse = await this.postService
           .getFollowing(this.currentUser)
           .toPromise();
+
+        // Ensure it's always an array
         this.userFollowing = Array.isArray(followingResponse)
           ? followingResponse
           : [];
@@ -67,29 +78,6 @@ export class TestimonialsComponent implements OnInit {
       this.posts = [];
       this.allComments = [];
       this.userFollowing = [];
-
-      // Temporary mock data for debugging
-      this.posts = [
-        {
-          id: 1,
-          instrument: "Piano",
-          description: "Classic piano",
-          name: "admin",
-          year: 3,
-          date: new Date().toISOString(),
-          likes: { count: 2, users: [] },
-        },
-      ];
-
-      this.allComments = [
-        {
-          id: 1,
-          postId: 1,
-          name: "John",
-          message: "Great post!",
-          date: new Date().toISOString(),
-        },
-      ];
     } finally {
       this.isLoading = false;
     }
@@ -99,19 +87,27 @@ export class TestimonialsComponent implements OnInit {
     const authors = [...new Set(this.posts.map((p) => p.username))];
     for (const author of authors) {
       if (author) {
-        this.authorFollowerCounts[author] =
-          (await this.postService.getFollowerCount(author).toPromise()) || 0;
+        const count = await this.postService
+          .getFollowerCount(author)
+          .toPromise();
+        this.authorFollowerCounts[author] = (count as number) || 0;
       }
     }
   }
 
   initializeDisplay() {
     this.posts.forEach((post) => {
+      // Initialize likes
       if (!post.likes) {
         post.likes = {
           count: 0,
           users: [],
         };
+      }
+
+      // Initialize newComment for this post
+      if (post.id && !this.newComment[post.id]) {
+        this.newComment[post.id] = { author: "", message: "" };
       }
     });
 
@@ -119,34 +115,36 @@ export class TestimonialsComponent implements OnInit {
     this.updatePagedPosts();
   }
 
-  isPostOwner(post: any): boolean {
-    return post.username === this.currentUser;
+  isPostOwner(post: Post): boolean {
+    return !!this.currentUser && post.username === this.currentUser;
   }
 
-  startEditing(post: any) {
-    this.editingPostId = post.id;
+  startEditing(post: Post) {
+    this.editingPostId = post.id || null;
     this.tempPost = { ...post };
   }
 
   async saveEdit() {
-    if (!this.editingPostId) return;
+    if (!this.editingPostId || !this.tempPost) return;
 
     try {
       const updatedPost = await this.postService
-        .updatePost(this.editingPostId, this.tempPost)
+        .updatePost(this.editingPostId, this.tempPost as Post)
         .toPromise();
 
-      // Update local state
       const index = this.posts.findIndex((p) => p.id === this.editingPostId);
       if (index !== -1) {
-        this.posts[index] = updatedPost;
+        this.posts[index] = updatedPost as Post;
         this.displayedPosts = [...this.posts];
       }
-
       this.editingPostId = null;
     } catch (error) {
       console.error("Failed to update post", error);
     }
+  }
+
+  cancelEdit() {
+    this.editingPostId = null;
   }
 
   async deletePost(postId: number) {
@@ -158,8 +156,6 @@ export class TestimonialsComponent implements OnInit {
       this.displayedPosts = this.displayedPosts.filter(
         (post) => post.id !== postId
       );
-
-      // Delete comments
       this.allComments = this.allComments.filter(
         (comment) => comment.postId !== postId
       );
@@ -173,50 +169,65 @@ export class TestimonialsComponent implements OnInit {
   updatePagedPosts() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
+
     this.pagedPosts = this.displayedPosts.slice(startIndex, endIndex);
 
+    // Initialize comment structure for the current page
     this.pagedPosts.forEach((post) => {
-      if (!this.newComment[post.id]) {
+      if (post.id && !this.newComment[post.id]) {
         this.newComment[post.id] = { author: "", message: "" };
       }
     });
+
+    // Force change detection
+    this.cdr.detectChanges();
   }
 
-  getComments(postId: number) {
-    return this.allComments.filter((comment) => comment.postId === postId);
-  }
-
-  async toggleLike(post: any) {
+  async toggleLike(post: Post) {
     if (!this.currentUser) {
       alert("برای لایک کردن باید وارد حساب کاربری خود شوید");
       return;
     }
 
-    try {
-      const userIndex = post.likes.users.indexOf(this.currentUser);
+    if (!post.likes) post.likes = { count: 0, users: [] };
 
-      if (userIndex !== -1) {
+    try {
+      if (this.hasLiked(post)) {
         await this.postService
-          .unlikePost(post.id, this.currentUser)
+          .unlikePost(post.id!, this.currentUser)
           .toPromise();
-        post.likes.users.splice(userIndex, 1);
+        post.likes.users = post.likes.users.filter(
+          (u) => u !== this.currentUser
+        );
         post.likes.count--;
       } else {
-        await this.postService.likePost(post.id, this.currentUser).toPromise();
-        post.likes.users.push(this.currentUser);
+        await this.postService.likePost(post.id!, this.currentUser).toPromise();
+        post.likes.users.push(this.currentUser!);
         post.likes.count++;
       }
     } catch (error) {
-      console.error("Failed to toggle like", error);
+      console.error("Full error details:", error); // Add this line
+      console.error("خطا در ثبت لایک", error);
     }
   }
 
-  hasLiked(post: any): boolean {
-    return this.currentUser && post.likes.users.includes(this.currentUser);
+  hasLiked(post: Post): boolean {
+    return (
+      !!this.currentUser &&
+      !!post.likes &&
+      post.likes.users.includes(this.currentUser)
+    );
   }
 
-  async addComment(post: any) {
-    const commentData = {
+  getComments(postId: number): PostComment[] {
+    return this.allComments.filter((comment) => comment.postId === postId);
+  }
+
+  async addComment(post: Post) {
+    if (!post.id) return;
+
+    const commentData: PostComment = {
+      // Explicit type
       postId: post.id,
       name: this.newComment[post.id].author || "Anonymous",
       message: this.newComment[post.id].message,
@@ -227,7 +238,7 @@ export class TestimonialsComponent implements OnInit {
       const newComment = await this.postService
         .addComment(commentData)
         .toPromise();
-      this.allComments.push(newComment);
+      this.allComments.push(newComment as PostComment);
       this.newComment[post.id] = { author: "", message: "" };
     } catch (error) {
       console.error("Failed to add comment", error);
@@ -238,18 +249,19 @@ export class TestimonialsComponent implements OnInit {
     if (!searchTerm) {
       this.displayedPosts = [...this.posts];
     } else {
+      const term = searchTerm.toLowerCase();
       this.displayedPosts = this.posts.filter(
         (post) =>
-          post.instrument.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          post.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          post.name.toLowerCase().includes(searchTerm.toLowerCase())
+          post.instrument.toLowerCase().includes(term) ||
+          post.description.toLowerCase().includes(term) ||
+          (post.name && post.name.toLowerCase().includes(term))
       );
     }
     this.currentPage = 1;
     this.updatePagedPosts();
   }
 
-  sortPosts(order: string) {
+  sortPosts(order: "new" | "old") {
     this.displayedPosts.sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
@@ -258,30 +270,23 @@ export class TestimonialsComponent implements OnInit {
     this.updatePagedPosts();
   }
 
-  // Pagination
   nextPage() {
-    const totalPages = Math.ceil(
-      this.displayedPosts.length / this.itemsPerPage
-    );
+    const totalPages = this.totalPages();
     if (this.currentPage < totalPages) {
       this.currentPage++;
-      this.updatePagedPosts();
+      this.updatePagedPosts(); // Ensure this is called
     }
   }
 
   prevPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.updatePagedPosts();
+      this.updatePagedPosts(); // Ensure this is called
     }
   }
 
   totalPages(): number {
     return Math.ceil(this.displayedPosts.length / this.itemsPerPage);
-  }
-
-  cancelEdit() {
-    this.editingPostId = null;
   }
 
   async toggleFollow(author: string) {
@@ -291,9 +296,12 @@ export class TestimonialsComponent implements OnInit {
     }
 
     try {
-      const isFollowing = this.userFollowing.includes(author);
+      if (!Array.isArray(this.userFollowing)) {
+        this.userFollowing = [];
+      }
+      const wasFollowing = this.isFollowing(author);
 
-      if (isFollowing) {
+      if (wasFollowing) {
         await this.postService
           .unfollowUser(this.currentUser, author)
           .toPromise();
@@ -303,15 +311,31 @@ export class TestimonialsComponent implements OnInit {
         this.userFollowing.push(author);
       }
 
-      // Update follower count
-      this.authorFollowerCounts[author] =
-        (await this.postService.getFollowerCount(author).toPromise()) || 0;
+      // Refresh follower count
+      const count = await this.postService.getFollowerCount(author).toPromise();
+      this.authorFollowerCounts[author] = (count as number) || 0;
     } catch (error) {
-      console.error("Failed to toggle follow", error);
+      console.error("خطا در ثبت فالو", error);
     }
   }
 
   isFollowing(author: string): boolean {
-    return this.userFollowing.includes(author);
+    return (
+      Array.isArray(this.userFollowing) && this.userFollowing.includes(author)
+    );
+  }
+
+  updateCommentAuthor(postId: number, value: string) {
+    if (!this.newComment[postId]) {
+      this.newComment[postId] = { author: "", message: "" };
+    }
+    this.newComment[postId].author = value;
+  }
+
+  updateCommentMessage(postId: number, value: string) {
+    if (!this.newComment[postId]) {
+      this.newComment[postId] = { author: "", message: "" };
+    }
+    this.newComment[postId].message = value;
   }
 }

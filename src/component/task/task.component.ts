@@ -46,7 +46,7 @@ export class TaskComponent {
       const { username, password } = this.loginForm.value;
 
       this.http
-        .get<any[]>("http://localhost:3000/users", {
+        .get<any[]>("http://localhost:3000/users", {  //درخواست گت به سرور ارسال میشه
           params: {
             username: username,
             password: password,
@@ -55,8 +55,9 @@ export class TaskComponent {
         .subscribe({
           next: (users) => {
             if (users.length === 1) {
-              localStorage.setItem("isLoggedIn", "true");
-              localStorage.setItem("username", username);
+              //ذخیره وضعیت لاگین در مرورگر
+              localStorage.setItem("isLoggedIn", "true"); //ثبت وضعیت ورود
+              localStorage.setItem("username", username); // ذخیره نام کاربری
               this.router.navigate(["/dashbord"]);
             } else {
               alert("نام کاربری یا رمز عبور اشتباه است!");

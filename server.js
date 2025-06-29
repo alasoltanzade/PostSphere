@@ -15,8 +15,8 @@ server.use(middlewares);
 server.use(jsonServer.bodyParser);
 
 server.get('/comments', (req, res) => {
-  const db = router.db;
-  res.json(db.get('comments').value());
+  const db = router.db; //دسترسی مستقیم به دیتابیس
+  res.json(db.get('comments').value());  //خواندن تمام کامنت ها از مجموعه
 });
 
 server.post('/comments', (req, res) => {
@@ -84,4 +84,17 @@ server.use(router);
 const port = 3000;
 server.listen(port, () => {
   console.log(`JSON Server is running on port ${port}`);
+});
+
+// Server-side (Node.js/Express example)
+app.post('/like', (req, res) => {
+  const { postId, username } = req.body;
+  // Your like logic here
+  res.status(200).send({ success: true });
+});
+
+app.post('/unlike', (req, res) => {
+  const { postId, username } = req.body;
+  // Your unlike logic here
+  res.status(200).send({ success: true });
 });
