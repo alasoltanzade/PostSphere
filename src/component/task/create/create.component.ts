@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
@@ -10,6 +10,17 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { PostService } from "../../../post.service";
 import { UserStats } from "../../../model/user-stats.model";
 import { Post } from "../../../model/post.model";
+import Map from "ol/Map";
+import View from "ol/View";
+import TileLayer from "ol/layer/Tile";
+import OSM from "ol/source/OSM";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import { fromLonLat, toLonLat } from "ol/proj";
+import { Point } from "ol/geom";
+import { Feature } from "ol";
+import { Draw } from "ol/interaction";
+import * as olProj from "ol/proj";
 
 @Component({
   selector: "app-create",
@@ -18,7 +29,7 @@ import { Post } from "../../../model/post.model";
   templateUrl: "./create.component.html",
   styleUrls: ["./create.component.scss"],
 })
-export class CreateComponent implements OnInit {
+export class CreateComponent implements OnInit, AfterViewInit, OnDestroy {
   username: string = "";
   userStats: UserStats = {
     postCount: 0,
@@ -27,6 +38,20 @@ export class CreateComponent implements OnInit {
   };
   postForm!: FormGroup;
   isLoading = false;
+
+  map!: Map;
+  vectorSource = new VectorSource();
+  drawInteraction: Draw | null = null;
+
+  // فقط از این یک متغیر برای موقعیت استفاده می‌کنیم
+  selectedLocation: { lat: number | null; lng: number | null } = {
+    lat: null,
+    lng: null,
+  };
+
+  locationAvailable = false;
+  locationError: string | null = null;
+  locationLoading = false;
 
   constructor(private fb: FormBuilder, private postService: PostService) {}
 
@@ -41,7 +66,81 @@ export class CreateComponent implements OnInit {
       instrument: ["", [Validators.required, Validators.minLength(2)]],
       description: ["", [Validators.required, Validators.minLength(6)]],
       year: ["", [Validators.required, Validators.min(0), Validators.max(100)]],
+      latitude: [null],
+      longitude: [null],
     });
+  }
+
+  getLocation() {
+    this.locationLoading = true;
+    this.locationError = null;
+
+    if (!navigator.geolocation) {
+      this.locationError =
+        "مرورگر شما از دریافت موقعیت مکانی پشتیبانی نمی‌کند.";
+      this.locationLoading = false;
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // فقط از selectedLocation استفاده می‌کنیم
+        this.selectedLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+
+        // تنظیم مقادیر در فرم
+        this.postForm.patchValue({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+
+        // نمایش موقعیت روی نقشه
+        this.showLocationOnMap(
+          position.coords.longitude,
+          position.coords.latitude
+        );
+
+        this.locationAvailable = true;
+        this.locationLoading = false;
+      },
+      (error) => {
+        this.locationLoading = false;
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            this.locationError = "دسترسی به موقعیت مکانی توسط کاربر رد شد.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            this.locationError = "اطلاعات موقعیت مکانی در دسترس نیست.";
+            break;
+          case error.TIMEOUT:
+            this.locationError = "دریافت موقعیت مکانی زمان‌بر شد.";
+            break;
+          default:
+            this.locationError = "خطای ناشناخته در دریافت موقعیت مکانی.";
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+  }
+
+  // نمایش موقعیت روی نقشه
+  private showLocationOnMap(lon: number, lat: number) {
+    if (!this.map) return;
+
+    const coordinate = fromLonLat([lon, lat]);
+
+    this.vectorSource.clear();
+    const feature = new Feature(new Point(coordinate));
+    this.vectorSource.addFeature(feature);
+
+    this.map.getView().setCenter(coordinate);
+    this.map.getView().setZoom(15);
   }
 
   get instrumentControl(): AbstractControl {
@@ -60,13 +159,7 @@ export class CreateComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true; //تنظیم وضعیت بارگذاری
-
-    // const newPost = {
-    //   ...this.postForm.value, //مقادیر فرم (instrument, description, year)
-    //   username: this.username, //نام کاربری از سرویس احراز هویت گرفته شده
-    //   date: new Date().toISOString(),
-    // };
+    this.isLoading = true;
 
     const newPost: Post = {
       instrument: this.postForm.value.instrument,
@@ -75,20 +168,23 @@ export class CreateComponent implements OnInit {
       username: this.username,
       date: new Date().toISOString(),
       id: 0,
-      name: ""
+      name: "",
+      // استفاده از selectedLocation
+      latitude: this.selectedLocation.lat,
+      longitude: this.selectedLocation.lng,
     };
 
-
-
     this.postService.createPost(newPost).subscribe({
-      //ارسال درخواست ایجاد پست
       next: () => {
-        this.postForm.reset(); //reset form
-        this.loadUserStats(); // بارگذاری مجدد آمار کاربر
+        this.postForm.reset();
+        this.loadUserStats();
         this.isLoading = false;
+        this.locationAvailable = false;
+        this.selectedLocation = { lat: null, lng: null };
+        this.vectorSource.clear(); // پاک کردن نقاط از نقشه
       },
       error: (err) => {
-        console.error("Post creation failed!!!!!!!!!", err);
+        console.error("Post creation failed!", err);
         this.isLoading = false;
       },
     });
@@ -112,5 +208,74 @@ export class CreateComponent implements OnInit {
 
   private resetUserStats() {
     this.userStats = { postCount: 0, followers: 0, following: 0 };
+  }
+
+  ngAfterViewInit() {
+    // استفاده از setTimeout برای اطمینان از وجود DOM
+    setTimeout(() => this.initMap(), 0);
+  }
+
+  ngOnDestroy() {
+    if (this.map) {
+      this.map.dispose();
+    }
+  }
+
+  private initMap() {
+    this.map = new Map({
+      target: "map",
+      layers: [
+        new TileLayer({
+          source: new OSM(),
+        }),
+        new VectorLayer({
+          source: this.vectorSource,
+        }),
+      ],
+      view: new View({
+        center: fromLonLat([51.389, 35.6892]),
+        zoom: 10,
+      }),
+    });
+
+    this.addDrawInteraction();
+  }
+
+  private addDrawInteraction() {
+    if (this.drawInteraction) {
+      this.map.removeInteraction(this.drawInteraction);
+    }
+
+    this.drawInteraction = new Draw({
+      source: this.vectorSource,
+      type: "Point",
+    });
+
+    this.drawInteraction.on("drawend", (event) => {
+      const feature = event.feature;
+      const geometry = feature.getGeometry() as Point;
+      const coordinates = geometry.getCoordinates();
+      const lonLat = this.toLonLat(coordinates);
+
+      this.selectedLocation = {
+        lng: lonLat[0],
+        lat: lonLat[1],
+      };
+
+      this.postForm.patchValue({
+        longitude: lonLat[0],
+        latitude: lonLat[1],
+      });
+
+      this.locationAvailable = true;
+    });
+
+    this.map.addInteraction(this.drawInteraction);
+  }
+
+  private toLonLat(coordinates: number[]): number[] {
+    if (!this.map) return [0, 0];
+
+    return toLonLat(coordinates, this.map.getView().getProjection());
   }
 }

@@ -8,6 +8,13 @@
   overflow: hidden;
 }
 
+.map-container {
+  height: 300px;
+  width: 100%;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
 .bg-img {
   width: 100%;
   height: 100%;
@@ -108,9 +115,11 @@
 .form-control::placeholder {
   color: white !important;
 }
+
 .form-control:hover::placeholder {
   color: rgba(0, 0, 0, 0.5) !important;
 }
+
 .form-control:hover {
   color: black !important;
   background-color: #fff !important;

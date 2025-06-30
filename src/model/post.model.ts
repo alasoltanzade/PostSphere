@@ -7,6 +7,8 @@ export interface Post {
   date: string;
   name: string;
   likes?: Like;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface Like {

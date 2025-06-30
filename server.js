@@ -87,14 +87,14 @@ server.listen(port, () => {
 });
 
 // Server-side (Node.js/Express example)
-app.post('/like', (req, res) => {
-  const { postId, username } = req.body;
-  // Your like logic here
-  res.status(200).send({ success: true });
-});
+// app.post('/like', (req, res) => {
+//   const { postId, username } = req.body;
+//   // Your like logic here
+//   res.status(200).send({ success: true });
+// });
 
-app.post('/unlike', (req, res) => {
-  const { postId, username } = req.body;
-  // Your unlike logic here
-  res.status(200).send({ success: true });
-});
+// app.post('/unlike', (req, res) => {
+//   const { postId, username } = req.body;
+//   // Your unlike logic here
+//   res.status(200).send({ success: true });
+// });
