@@ -13,16 +13,10 @@ export class PostService {
 
   constructor(private http: HttpClient) {}
 
-  // createPost(postData: any) {
-  //   return this.http.post(`${this.apiUrl}/posts`, postData);
-  // }
   createPost(post: Post): Observable<Post> {
     return this.http.post<Post>(`${this.apiUrl}/posts`, post);
   }
 
-  // getUserStats(username: string) {
-  //   return this.http.get<any>(`${this.apiUrl}/stats/${username}`);
-  // }
   getUserStats(username: string): Observable<UserStats> {
     return this.http.get<UserStats>(`${this.apiUrl}/stats/${username}`);
   }
@@ -91,10 +85,4 @@ export class PostService {
       .get<any>(`${this.apiUrl}/stats/${username}`)
       .pipe(map((response) => response.followers));
   }
-
-  // getFollowerCount(username: string): Observable<number> {
-  //   return this.http.get<number>(
-  //     `${this.apiUrl}/users/${username}/followers/count`
-  //   );
-  // }
 }

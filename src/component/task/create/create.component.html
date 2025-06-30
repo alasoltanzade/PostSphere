@@ -118,13 +118,14 @@
           </div>
 
 
+          <!-- location -->
+
           <div class="form-group">
             <div *ngIf="locationLoading" class="alert alert-info"> Getting your location... </div>
 
             <div *ngIf="locationError" class="alert alert-danger">
               {{ locationError }}
             </div>
-
             <div class="location-section">
               <button type="button" class="btn btn-outline-primary mb-3" (click)="getLocation()"
                 [disabled]="locationLoading">

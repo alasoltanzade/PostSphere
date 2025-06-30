@@ -28,85 +28,11 @@
   ],
   "posts": [
     {
-      "id": 1,
-      "instrument": "Piano",
-      "description": "Classic piano",
-      "username": "admin",
-      "year": 3,
-      "date": "2023-10-10T12:00:00Z"
-    },
-    {
       "instrument": "Guitar",
       "description": "Classic guitar",
       "username": "admin",
       "year": 5,
       "date": "2023-10-10T12:00:00Z"
-    },
-    {
-      "instrument": "drum",
-      "description": "loundly instrumentd",
-      "year": 8,
-      "username": "soltanzade",
-      "date": "2025-06-28T14:48:35.652Z",
-      "id": 2,
-      "name": "soltanzade",
-      "likes": {
-        "count": 2,
-        "users": []
-      }
-    },
-    {
-      "instrument": "taar",
-      "description": "funny and inspired",
-      "year": 2,
-      "username": "dehghan",
-      "date": "2025-06-29T06:50:46.833Z",
-      "id": 3
-    },
-    {
-      "instrument": "yyys",
-      "description": "ssssssssssss",
-      "year": 2,
-      "username": "admin",
-      "date": "2025-06-29T09:00:22.090Z",
-      "id": 4
-    },
-    {
-      "instrument": "gtttttttttt",
-      "description": "ggggggggggggggggg",
-      "year": 5,
-      "username": "admin",
-      "date": "2025-06-29T09:19:57.898Z",
-      "id": 5
-    },
-    {
-      "instrument": "dsa",
-      "description": "asdfgsag",
-      "year": 3,
-      "username": "soltanzade",
-      "date": "2025-06-29T10:27:44.364Z",
-      "id": 7,
-      "name": ""
-    },
-    {
-      "instrument": "irir",
-      "description": "iiiiiiiiiiiiiiiiiiiiiiilo",
-      "year": 4,
-      "username": "admin",
-      "date": "2025-06-29T11:32:21.599Z",
-      "id": 8,
-      "name": ""
-    },
-    {
-      "instrument": "teset new",
-      "description": "newwwwwwwwwwww",
-      "year": 4,
-      "username": "soltanzade",
-      "date": "2025-06-30T07:42:18.188Z",
-      "id": 9,
-      "name": "",
-      "latitude": 35.66758080498143,
-      "longitude": 51.415625787670706
     },
     {
       "id": 10
@@ -119,6 +45,61 @@
       "latitude": 35.715298,
       "longitude": 51.404343,
       "id": 11
+    },
+    {
+      "instrument": "testtttt",
+      "description": "asdasdasdad",
+      "year": 8,
+      "username": "admin",
+      "date": "2025-06-30T11:35:50.236Z",
+      "id": 12,
+      "name": "",
+      "latitude": 35.57618806542699,
+      "longitude": 51.454917968749996
+    },
+    {
+      "instrument": "piano",
+      "description": "classic piano can help",
+      "year": 8,
+      "username": "admin",
+      "date": "2025-06-30T12:09:09.026Z",
+      "id": 13,
+      "name": "",
+      "latitude": 35.66326324547583,
+      "longitude": 51.2956162109375
+    },
+    {
+      "instrument": "testst tsets",
+      "description": "new post",
+      "year": 9,
+      "username": "admin",
+      "date": "2025-06-30T12:24:47.278Z",
+      "id": 14,
+      "name": "",
+      "latitude": 35.60051965585063,
+      "longitude": 51.658222258304434
+    },
+    {
+      "instrument": "mee",
+      "description": "newwwwwwwwwwwwwwwwwwwwww",
+      "year": 6,
+      "username": "admin",
+      "date": "2025-06-30T12:26:45.974Z",
+      "id": 15,
+      "name": "",
+      "latitude": 35.63657327573095,
+      "longitude": 51.064897416713094
+    },
+    {
+      "instrument": "asdads",
+      "description": "asdasdas",
+      "year": 6,
+      "username": "admin",
+      "date": "2025-06-30T12:33:03.450Z",
+      "id": 16,
+      "name": "",
+      "latitude": 35.5221436009692,
+      "longitude": 51.17353589859404
     }
   ]
 }

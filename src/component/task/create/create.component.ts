@@ -43,7 +43,6 @@ export class CreateComponent implements OnInit, AfterViewInit, OnDestroy {
   vectorSource = new VectorSource();
   drawInteraction: Draw | null = null;
 
-  // فقط از این یک متغیر برای موقعیت استفاده می‌کنیم
   selectedLocation: { lat: number | null; lng: number | null } = {
     lat: null,
     lng: null,
@@ -72,10 +71,12 @@ export class CreateComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getLocation() {
+    console.log("درخواست موقعیت مکانی شروع شد");
     this.locationLoading = true;
     this.locationError = null;
 
     if (!navigator.geolocation) {
+      console.error("مرورگر از geolocation پشتیبانی نمی‌کند");
       this.locationError =
         "مرورگر شما از دریافت موقعیت مکانی پشتیبانی نمی‌کند.";
       this.locationLoading = false;
@@ -84,19 +85,29 @@ export class CreateComponent implements OnInit, AfterViewInit, OnDestroy {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        // فقط از selectedLocation استفاده می‌کنیم
+        console.log("موقعیت دریافت شد:", position);
+
+        // اعتبارسنجی مختصات
+        if (
+          typeof position.coords.latitude !== "number" ||
+          typeof position.coords.longitude !== "number"
+        ) {
+          throw new Error("مختصات نامعتبر دریافت شد");
+        }
+
+        console.log("عرض جغرافیایی:", position.coords.latitude);
+        console.log("طول جغرافیایی:", position.coords.longitude);
+
         this.selectedLocation = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         };
 
-        // تنظیم مقادیر در فرم
         this.postForm.patchValue({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
 
-        // نمایش موقعیت روی نقشه
         this.showLocationOnMap(
           position.coords.longitude,
           position.coords.latitude
@@ -106,25 +117,36 @@ export class CreateComponent implements OnInit, AfterViewInit, OnDestroy {
         this.locationLoading = false;
       },
       (error) => {
+        console.error("جزئیات کامل خطا:", {
+          code: error.code,
+          message: error.message,
+          PERMISSION_DENIED: error.PERMISSION_DENIED,
+          POSITION_UNAVAILABLE: error.POSITION_UNAVAILABLE,
+          TIMEOUT: error.TIMEOUT,
+        });
+
         this.locationLoading = false;
         switch (error.code) {
           case error.PERMISSION_DENIED:
             this.locationError = "دسترسی به موقعیت مکانی توسط کاربر رد شد.";
             break;
           case error.POSITION_UNAVAILABLE:
-            this.locationError = "اطلاعات موقعیت مکانی در دسترس نیست.";
+            this.locationError = `
+            سرویس موقعیت‌یابی در دسترس نیست.
+          `;
             break;
           case error.TIMEOUT:
-            this.locationError = "دریافت موقعیت مکانی زمان‌بر شد.";
+            this.locationError =
+              "دریافت موقعیت مکانی زمان‌بر شد. لطفاً دوباره تلاش کنید.";
             break;
           default:
-            this.locationError = "خطای ناشناخته در دریافت موقعیت مکانی.";
+            this.locationError = "خطای ناشناخته: " + error.message;
         }
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
+        timeout: 30000, // 30 ثانیه
+        maximumAge: 60000, // 1 دقیقه
       }
     );
   }
@@ -169,7 +191,6 @@ export class CreateComponent implements OnInit, AfterViewInit, OnDestroy {
       date: new Date().toISOString(),
       id: 0,
       name: "",
-      // استفاده از selectedLocation
       latitude: this.selectedLocation.lat,
       longitude: this.selectedLocation.lng,
     };

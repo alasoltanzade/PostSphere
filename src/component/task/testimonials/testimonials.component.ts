@@ -7,6 +7,15 @@ import { Post, Like } from "../../../model/post.model";
 import { FollowerCount } from "../../../model/follower.model";
 import { PostComment } from "../../../model/comment.model";
 import { ChangeDetectorRef } from "@angular/core";
+import View from "ol/View";
+import TileLayer from "ol/layer/Tile";
+import OSM from "ol/source/OSM";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import { fromLonLat } from "ol/proj";
+import Point from "ol/geom/Point";
+import Feature from "ol/Feature";
+import Map from "ol/Map";
 
 @Component({
   selector: "app-testimonials",
@@ -29,12 +38,77 @@ export class TestimonialsComponent implements OnInit {
   authorFollowerCounts: FollowerCount = {};
   allComments: PostComment[] = [];
   isLoading = true;
+  map!: Map;
+  vectorSource = new VectorSource();
+  showCoordinatesModal = false;
+  selectedCoordinates: { lat: number | null; lng: number | null } = {
+    lat: null,
+    lng: null,
+  };
 
   constructor(
     private router: Router,
     private postService: PostService,
     private cdr: ChangeDetectorRef
   ) {}
+
+  showCoordinates(post: Post) {
+    this.selectedCoordinates = {
+      lat: post.latitude || null,
+      lng: post.longitude || null,
+    };
+    this.showCoordinatesModal = true;
+
+    // بعد از باز شدن مودال، نقشه را مقداردهی اولیه کنید
+    setTimeout(() => {
+      this.initMap();
+      if (this.selectedCoordinates.lat && this.selectedCoordinates.lng) {
+        this.showLocationOnMap(
+          this.selectedCoordinates.lng,
+          this.selectedCoordinates.lat
+        );
+      }
+    }, 0);
+  }
+
+  private showLocationOnMap(lon: number, lat: number) {
+    if (!this.map) return;
+
+    const coordinate = fromLonLat([lon, lat]);
+
+    this.vectorSource.clear();
+    const feature = new Feature(new Point(coordinate));
+    this.vectorSource.addFeature(feature);
+
+    this.map.getView().setCenter(coordinate);
+    this.map.getView().setZoom(15);
+  }
+
+  private initMap() {
+    this.map = new Map({
+      target: "map-modal",
+      layers: [
+        new TileLayer({
+          source: new OSM(),
+        }),
+        new VectorLayer({
+          source: this.vectorSource,
+        }),
+      ],
+      view: new View({
+        center: fromLonLat([51.389, 35.6892]),
+        zoom: 10,
+      }),
+    });
+  }
+
+  // متد بستن مودال
+  closeCoordinatesModal() {
+    this.showCoordinatesModal = false;
+    if (this.map) {
+      this.map.dispose();
+    }
+  }
 
   ngOnInit() {
     this.currentUser = localStorage.getItem("username")!;

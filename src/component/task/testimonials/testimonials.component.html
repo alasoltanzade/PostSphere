@@ -83,6 +83,14 @@
                 <span>{{ post.date | date:'medium' }}</span>
 
                 <div class="d-flex flex-column mb-2">
+                  <!-- location -->
+                  <div class="d-flex flex-column mb-2">
+                    <button *ngIf="post.latitude && post.longitude" class="btn btn-sm btn-outline-secondary my-2"
+                      (click)="showCoordinates(post)">
+                      <i class="bi bi-map"></i> Show on Map
+                    </button>
+                  </div>
+
                   <button class="btn btn-sm btn-outline-primary my-4" (click)="toggleLike(post)">
                     {{ hasLiked(post) ? '❤️' : '🤍 Like' }}
                     <span class="badge bg-secondary ms-2">{{ post.likes?.count || 0 }}</span>
@@ -155,6 +163,32 @@
             Next &rarr;
           </button>
         </div>
+
+
+
+
+        <!-- مودال نمایش مختصات با نقشه -->
+        <div *ngIf="showCoordinatesModal" class="modal fade show" style="display: block; background: rgba(0,0,0,0.5)">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Location on Map</h5>
+                <button type="button" class="btn-close" (click)="closeCoordinatesModal()"></button>
+              </div>
+              <div class="modal-body">
+                <div id="map-modal" class="map-container" style="height: 400px; width: 100%;"></div>
+                <div class="coordinates-info mt-3">
+                  <p><strong>Latitude:</strong> {{ selectedCoordinates?.lat | number:'1.4-4' }}</p>
+                  <p><strong>Longitude:</strong> {{ selectedCoordinates?.lng | number:'1.4-4' }}</p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeCoordinatesModal()">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

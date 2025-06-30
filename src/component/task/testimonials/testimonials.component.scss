@@ -188,3 +188,34 @@
   margin: 10px;
   color: white;
 }
+
+
+.modal {
+  z-index: 1050;
+}
+
+.btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  color: white;
+}
+
+.map-container {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+
+.modal-lg {
+  max-width: 800px;
+}
+
+.coordinates-info {
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+}
