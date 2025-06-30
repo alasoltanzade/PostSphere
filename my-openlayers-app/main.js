@@ -1,7 +1,7 @@
-import './style.css';
-import {Map, View} from 'ol';
-import TileLayer from 'ol/layer/Tile';
+import Map from 'ol/Map';
 import OSM from 'ol/source/OSM';
+import TileLayer from 'ol/layer/Tile';
+import View from 'ol/View';
 
 const map = new Map({
   target: 'map',

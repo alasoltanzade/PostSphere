@@ -1,15 +1,16 @@
 {
   "name": "my-openlayers-app",
+  "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "start": "vite",
-    "build": "vite build",
-    "serve": "vite preview"
+    "dev": "vite",
+    "build": "vite build --emptyOutDir",
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^6.3.5"
+    "vite": "^5.2.8"
   },
   "dependencies": {
-    "ol": "latest"
+    "ol": "^9.0.0"
   }
 }
