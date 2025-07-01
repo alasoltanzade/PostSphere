@@ -5,10 +5,15 @@ import { loginGuard } from "./login.guard";
 
 export const routes: Routes = [
   {
+    path: "",
+    redirectTo: "login",
+    pathMatch: "full",
+  },
+  {
     path: "login",
     loadComponent: () =>
       import("./component/task/task.component").then((c) => c.TaskComponent),
-    // canActivate: [loginGuard],
+    canActivate: [loginGuard],
   },
   {
     path: "dashbord",

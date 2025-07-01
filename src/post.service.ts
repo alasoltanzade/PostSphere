@@ -1,17 +1,29 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { environment } from "./environment";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { Post } from "./model/post.model";
 import { UserStats } from "./model/user-stats.model";
 import { PostComment } from "./model/comment.model";
+import { Router } from "@angular/router";
 
 @Injectable({ providedIn: "root" })
 export class PostService {
   private apiUrl = environment.apiBaseUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
+
+  logout(): Observable<any> {
+    this.clearAuthData();
+    this.router.navigate(["/login"]);
+    return of(null);
+  }
+
+  private clearAuthData() {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("current_user");
+  }
 
   createPost(post: Post): Observable<Post> {
     return this.http.post<Post>(`${this.apiUrl}/posts`, post);
@@ -41,6 +53,7 @@ export class PostService {
       { headers: this.getAuthHeaders() } // Add auth headers if needed
     );
   }
+
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem("token"); // Get your auth token
     return new HttpHeaders({
@@ -58,7 +71,6 @@ export class PostService {
   }
 
   // Comment methods
-
   getComments(): Observable<PostComment[]> {
     return this.http.get<PostComment[]>(`${this.apiUrl}/comments`);
   }

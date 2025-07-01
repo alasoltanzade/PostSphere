@@ -21,6 +21,20 @@
   object-fit: cover;
 }
 
+.logout-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 10px;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #d32f2f;
+  }
+}
 
 .tm-brand-container {
   max-width: 400px;

@@ -20,7 +20,7 @@ import { fromLonLat, toLonLat } from "ol/proj";
 import { Point } from "ol/geom";
 import { Feature } from "ol";
 import { Draw } from "ol/interaction";
-import * as olProj from "ol/proj";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-create",
@@ -52,7 +52,11 @@ export class CreateComponent implements OnInit, AfterViewInit, OnDestroy {
   locationError: string | null = null;
   locationLoading = false;
 
-  constructor(private fb: FormBuilder, private postService: PostService) {}
+  constructor(
+    private fb: FormBuilder,
+    private postService: PostService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.username = localStorage.getItem("username") || "";
@@ -76,79 +80,41 @@ export class CreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.locationError = null;
 
     if (!navigator.geolocation) {
-      console.error("مرورگر از geolocation پشتیبانی نمی‌کند");
       this.locationError =
         "مرورگر شما از دریافت موقعیت مکانی پشتیبانی نمی‌کند.";
       this.locationLoading = false;
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        console.log("موقعیت دریافت شد:", position);
-
-        // اعتبارسنجی مختصات
-        if (
-          typeof position.coords.latitude !== "number" ||
-          typeof position.coords.longitude !== "number"
-        ) {
-          throw new Error("مختصات نامعتبر دریافت شد");
-        }
-
-        console.log("عرض جغرافیایی:", position.coords.latitude);
-        console.log("طول جغرافیایی:", position.coords.longitude);
-
-        this.selectedLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-
-        this.postForm.patchValue({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-
-        this.showLocationOnMap(
-          position.coords.longitude,
-          position.coords.latitude
-        );
-
-        this.locationAvailable = true;
-        this.locationLoading = false;
-      },
-      (error) => {
-        console.error("جزئیات کامل خطا:", {
-          code: error.code,
-          message: error.message,
-          PERMISSION_DENIED: error.PERMISSION_DENIED,
-          POSITION_UNAVAILABLE: error.POSITION_UNAVAILABLE,
-          TIMEOUT: error.TIMEOUT,
-        });
-
-        this.locationLoading = false;
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            this.locationError = "دسترسی به موقعیت مکانی توسط کاربر رد شد.";
-            break;
-          case error.POSITION_UNAVAILABLE:
-            this.locationError = `
-            سرویس موقعیت‌یابی در دسترس نیست.
-          `;
-            break;
-          case error.TIMEOUT:
-            this.locationError =
-              "دریافت موقعیت مکانی زمان‌بر شد. لطفاً دوباره تلاش کنید.";
-            break;
-          default:
-            this.locationError = "خطای ناشناخته: " + error.message;
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 30000, // 30 ثانیه
-        maximumAge: 60000, // 1 دقیقه
+    navigator.geolocation.getCurrentPosition((position) => {
+      if (
+        typeof position.coords.latitude !== "number" ||
+        typeof position.coords.longitude !== "number"
+      ) {
+        throw new Error("مختصات نامعتبر دریافت شد");
       }
-    );
+
+      console.log("عرض جغرافیایی:", position.coords.latitude);
+      console.log("طول جغرافیایی:", position.coords.longitude);
+
+      this.selectedLocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      };
+
+      this.postForm.patchValue({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      });
+
+      this.showLocationOnMap(
+        position.coords.longitude,
+        position.coords.latitude
+      );
+
+      this.locationAvailable = true;
+      this.locationLoading = false;
+    });
   }
 
   // نمایش موقعیت روی نقشه
@@ -165,6 +131,7 @@ export class CreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.map.getView().setZoom(15);
   }
 
+  // get
   get instrumentControl(): AbstractControl {
     return this.postForm.get("instrument")!;
   }
@@ -298,5 +265,27 @@ export class CreateComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.map) return [0, 0];
 
     return toLonLat(coordinates, this.map.getView().getProjection());
+  }
+
+  logout(): void {
+    this.postService.logout().subscribe({
+      next: () => {
+        console.log("با موفقیت خارج شدید");
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("current_user");
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("username");
+
+        this.router.navigate(["/login"]);
+      },
+      error: (err) => {
+        console.error("خطا در خروج:", err);
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("current_user");
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("username");
+        this.router.navigate(["/login"]);
+      },
+    });
   }
 }

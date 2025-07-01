@@ -102,7 +102,6 @@ export class TestimonialsComponent implements OnInit {
     });
   }
 
-  // متد بستن مودال
   closeCoordinatesModal() {
     this.showCoordinatesModal = false;
     if (this.map) {
@@ -115,7 +114,6 @@ export class TestimonialsComponent implements OnInit {
     this.loadData();
   }
 
-  //بارگذاری اولیه داده‌ها
   async loadData() {
     try {
       // Load posts

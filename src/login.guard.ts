@@ -5,8 +5,11 @@ export const loginGuard: CanActivateFn = () => {
   const router = inject(Router);
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
+  console.log("LoginGuard - isLoggedIn:", isLoggedIn);
+
   if (isLoggedIn) {
-    return router.createUrlTree(["/dashboard"]);
+    console.log("Redirecting to dashboard");
+    return router.navigateByUrl("/dashbord");
   }
 
   return true;

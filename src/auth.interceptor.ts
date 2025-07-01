@@ -1,3 +1,7 @@
+// اینترسپتورها در Angular برای تغییر یا بررسی درخواست‌های HTTP قبل از ارسال یا پاسخ‌های دریافتی قبل از پردازش استفاده می‌شوند.
+
+
+
 import { Injectable } from "@angular/core";
 import {
   HttpInterceptor,
